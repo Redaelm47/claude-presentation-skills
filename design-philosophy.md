@@ -1,25 +1,23 @@
-# Design Philosophy — "Attentive Cartography"
+# Design Philosophy · « Clarté Attentive »
 
-*A visual movement created under the canvas-design method, expressed through Anthropic's brand identity, to anchor the section-break, cover, and closing canvases of the "Attention Is All You Need" deck.*
-
----
-
-## The Movement: Attentive Cartography
-
-**Attentive Cartography** treats knowledge not as a linear stream but as a field — a landscape of relationships waiting to be mapped. Where the old world read one word after another, this movement sees every point on the plane holding a quiet line of sight to every other point. The canvas becomes a chart of attention itself: a warm, paper-toned expanse across which faint meridians of connection are drawn with the patience of a master engraver. Nothing shouts. Everything relates.
-
-The philosophy is built on **restraint as reverence**. The plane breathes. Vast fields of warm off-white (`#faf9f5`) and near-black (`#141413`) do the heavy lifting, and color enters only as a considered accent — a single terracotta arc (`#d97757`), a lone slate-blue node (`#6a9bcc`), a whisper of sage (`#788c5d`). These are not decorations; they are the coordinates of meaning, placed with the deliberation of someone who has spent a lifetime learning what to leave out. Every element must feel labored over, meticulously crafted, the product of countless hours and deep expertise — the kind of composition that rewards sustained viewing and proves that something as ephemeral as *attention* can be studied, mapped, and rendered with clinical grace.
-
-**Space and form** obey a strict systematic geometry: a grid of fine hairlines, repeated nodes, and connecting arcs that suggest an attention matrix without ever labeling itself as one. Marks accumulate — dots, radiating lines, concentric weightings — building meaning through patient repetition rather than a single dramatic gesture. The result should read like a plate torn from an imaginary atlas of cognition, drawn by a cartographer who documents the invisible with the same rigor a naturalist gives to observable phenomena.
-
-**Color and material** stay disciplined and cohesive. The paper ground is never pure white; it carries the warmth of Anthropic's light tone, as if printed on fine stock. Ink is the brand's dark, not black. Accents cycle in strict rotation — terracotta, then slate, then sage — never mixing more than needed, so the eye always knows where the emphasis lives. The palette must feel intentional, master-level, painstakingly calibrated.
-
-**Scale and rhythm** favor the monumental single gesture set against a chorus of tiny marks: one large sculptural form — a radiating fan of attention lines, a single dominant arc, a concentric burst — anchoring a field of small systematic reference markers, clinical labels, and coordinate ticks. Typography is sparse and design-forward: Poppins for the rare large word or numeral, set with generous tracking; small monospace-flavored labels serving as the map's marginalia. Text is a visual accent, never a paragraph — a coordinate, a caption, a title carved into the composition.
-
-**Composition and balance** resolve into calm asymmetry: weight held to one side, answered by empty air, the whole held in tension like a well-set page. Every alignment is the work of countless refinements; nothing overlaps, nothing falls off the plane, every mark has breathing room. The finished canvas should feel pristine — a museum-grade artifact where analytical visual language is used to express something profoundly human: the idea that meaning arises not from sequence, but from everything attending to everything, all at once.
+*Mouvement visuel créé selon la méthode canvas-design, aligné sur le système « Syllia — Clarté » (blanc minimal, émeraude discipliné), pour la cover, les trois séparateurs de section et la slide de fin du deck « Attention Is All You Need ».*
 
 ---
 
-## The Subtle Reference
+## Le mouvement : Clarté Attentive
 
-Woven invisibly into every canvas: the **attention matrix** — the field where each token silently weighs its relationship to all others. It appears never as a labeled diagram but as the underlying logic of the composition: radiating connection lines, weighted nodes, a lattice of glances. Those who know the paper will feel the mechanism in the geometry; everyone else simply experiences a masterful, quietly rigorous abstract map. The movement's soul is *self-attention rendered as landscape*.
+**Clarté Attentive** part d'une conviction : la lumière est la meilleure encre. La toile n'est jamais un décor, elle est la surface elle-même : un blanc frais, à peine teinté de vert (`#f5f8f6`), traversé de deux halos d'émeraude si diffus qu'on les sent plus qu'on ne les voit : une lumière d'atelier, jamais un dégradé criard. Sur cette surface calme, le savoir se dépose comme sur une feuille propre : chaque élément respire, chaque marge est généreuse, rien ne crie.
+
+La discipline chromatique est la signature du mouvement : **une seule couleur d'accent**, un émeraude vivant mais tenu (`#0f9d76`, décliné en `#0a6b52` profond pour le texte, `#39c19b` pour les halos, `#e7f4ee` en teinte de fond). L'accent est réservé à ce qui compte : le fil d'attention, le point de statut, le mot clé. Tout le reste vit dans des encres fraîches, vert-noir désaturé (`#11221c`, `#465650`) et des gris neutres (`#78857e`, filets `#e8ecea`). Jamais de cadre lourd : la profondeur naît de filets fins et d'ombres douces superposées, comme des objets posés sur du papier. Chaque composition doit paraître méticuleusement calibrée, le produit d'innombrables heures d'un praticien au sommet de son art : un pixel-perfect qui ne se voit pas, mais se ressent.
+
+**L'espace et la forme** parlent la langue de la pilule et du galet : coins entièrement arrondis, cartes aux angles de 22 px, panneaux à 28 px. La géométrie est tendre mais exacte. Les grands gestes sont rares : un seul motif dominant par toile — un éventail d'attention aux traits fins, une constellation de nœuds, une silhouette : posé dans l'air blanc et contrebalancé par le vide. La typographie suit une règle stricte héritée du système : la **serif (Lora) uniquement en display**, pour les grands moments éditoriaux : titres amples, chiffres monumentaux ; tout le reste en **Plus Jakarta Sans**, précise et contemporaine. Un surtitre en capitales espacées, émeraude profond, annonce chaque page comme un murmure sûr de lui.
+
+**L'échelle et le rythme** opposent le monumental au minuscule : un titre serif qui occupe l'air, servi par une chorale de micro-éléments : chips en pilule, points de statut (« ● » suivi d'un mot, jamais un badge criard), filets hairline, petits repères en capitales grises. L'information se lit en strates : d'abord la lumière, puis la forme, puis le mot. Le regard n'est jamais forcé : il est invité.
+
+**La composition et l'équilibre** se résolvent en asymétrie calme : la masse typographique à gauche, le motif respirant à droite, le tout tenu par des marges amples et des alignements au dixième de pixel. Rien ne déborde, rien ne se chevauche : chaque élément est contenu avec la précision d'un maître typographe. L'œuvre finale doit sembler évidente : si simple qu'on croirait qu'elle n'a pas été dessinée : c'est là le sommet du métier, l'exécution de niveau maître qui cache son propre effort.
+
+---
+
+## La référence subtile
+
+Tissée invisiblement dans chaque toile : **le champ d'attention** : ce moment où chaque élément d'une séquence regarde tous les autres et choisit ce qui compte. Il n'apparaît jamais comme un diagramme étiqueté, mais comme la logique secrète des compositions : des fils fins qui convergent vers un nœud, des pondérations rendues par l'épaisseur et l'opacité, une constellation qui s'organise autour d'un regard. Ceux qui connaissent le papier sentiront le mécanisme ; les autres verront simplement une lumière verte et calme qui relie des points. L'âme du mouvement : *l'attention rendue comme clarté*.

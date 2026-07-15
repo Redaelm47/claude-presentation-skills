@@ -1,8 +1,9 @@
-# Attention Is All You Need — Présentation HTML
+# Attention Is All You Need · Présentation HTML
 
 Deck de **20 slides** sur le papier *Attention Is All You Need* (Vaswani et al., NeurIPS 2017),
-construit dans l'**identité visuelle Anthropic** (skill `brand-guidelines`) avec des visuels
-d'ouverture générés selon le skill `canvas-design`.
+construit dans l'**identité « Syllia — Clarté »** (kit design du client : blanc minimal,
+accent émeraude unique, pills, ombres douces) avec des visuels d'ouverture générés selon
+le skill `canvas-design`. Les équations sont composées en **vrai LaTeX** (MathJax → SVG au build).
 
 ![Cover](assets/cover.png)
 
@@ -70,14 +71,19 @@ Un PDF déjà généré (`attention-deck.pdf`) est fourni comme référence.
 
 ---
 
-## Identité visuelle appliquée (brand-guidelines)
+## Identité visuelle appliquée (« Syllia — Clarté »)
 
-- **Couleurs** — Dark `#141413`, Light `#faf9f5`, Mid Gray `#b0aea5`, Light Gray `#e8e6dc`,
-  Orange `#d97757` (accent principal), Blue `#6a9bcc`, Green `#788c5d`.
-- **Typographie** — **Poppins** pour les titres, **Lora** pour le corps (embarquées, avec repli Arial/Georgia).
+- **Couleurs** : accent émeraude `#0f9d76` (profond `#0a6b52`, teinte douce `#e7f4ee`),
+  encres fraîches `#11221c` / `#465650`, neutres `#8b968f`, filets `#e8ecea`,
+  fond canvas `#f5f8f6` avec halos aurora ; statuts : info `#3a6ff0`, brouillon ambre `#8a6a1a`.
+- **Typographie** : **Plus Jakarta Sans** (variable, UI et corps) ; **Lora** réservée aux grands
+  titres display, comme dans le kit. Polices embarquées en base64.
+- **Langage** : pills entièrement arrondies, cartes 20-22 px, ombres douces superposées,
+  filets fins, une seule couleur d'accent, point de statut « ● + mot ».
 - **Diagrammes techniques** (architecture, Q/K/V, scaled dot-product, multi-head, positional encoding) :
-  **SVG/HTML-CSS natifs** dans le style de la marque — jamais via `canvas-design`.
-- **Visuels `canvas-design`** : uniquement la cover, les 3 séparateurs de section et la slide de fin.
+  **SVG/HTML-CSS natifs** dans le style du kit : jamais via `canvas-design`.
+- **Visuels `canvas-design`** : cover, 3 séparateurs, slide de fin : avec le logo Syllia
+  (masque CSS recolorable) et la mascotte sur la slide de fin.
 
 ---
 
