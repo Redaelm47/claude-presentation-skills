@@ -91,6 +91,18 @@ Un PDF déjà généré (`attention-deck.pdf`) est fourni comme référence.
 
 ---
 
+## Refaire une présentation dans ce style
+
+Le repo embarque un **skill Claude Code** : `.claude/skills/metropolis-deck/`.
+Ouvre une session Claude Code sur ce repo et demande simplement
+*« fais-moi une présentation sur <sujet> »* (ou invoque `/metropolis-deck`) :
+Claude suivra la recette complète (tokens du thème, diagrammes SVG, charts à
+anatomie complète, équations LaTeX, visuels canvas-design, QA visuelle, PDF).
+Le skill contient les polices Fira Sans, le template canonique et les scripts
+de build (`mkfonts`, `tex2svg`, `render`, `qa`, `pdf`).
+
+---
+
 ## Plan du deck (20 slides)
 
 1. Cover *(visuel canvas-design)*
