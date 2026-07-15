@@ -1,6 +1,6 @@
 ---
 name: metropolis-deck
-description: Crée une présentation HTML complète (deck 16:9, navigation clavier, export PDF) dans le style Metropolis (beamer moderne des ingénieurs) — blanc cassé, teal foncé, accent orange unique, Fira Sans, diagrammes SVG plats, charts à anatomie complète, équations en vrai LaTeX. Utiliser dès que l'utilisateur demande une présentation, des slides ou un deck.
+description: Crée une présentation HTML complète (deck 16:9, navigation clavier, export PDF) dans le style Metropolis (beamer moderne des ingénieurs) : blanc cassé, teal foncé, accent orange unique, Fira Sans, diagrammes SVG plats, charts à anatomie complète, équations en vrai LaTeX, avec boucle de vérification visuelle. Utiliser dès que l'utilisateur demande une présentation, des slides ou un deck.
 ---
 
 # Metropolis Deck — présentation HTML façon beamer-metropolis
@@ -69,7 +69,12 @@ Primitives CSS du template : `.d-box` (blanc/trait ink), `.d-attn` (orange soft)
   (`#ah` gris, `#ahO` orange, `#ahB` bleu) — voir le template.
 - **Tracés orthogonaux uniquement** (verticaux/horizontaux avec coudes), jamais de
   diagonale approximative. Les chemins de contournement passent par la droite.
-- Les diagrammes remplissent leur colonne : viewBox ~540 de large, boîtes généreuses.
+- **Taille : les diagrammes doivent être GRANDS et lisibles, sans déborder.**
+  Ils remplissent leur colonne (viewBox ~540 de large, hauteur 460-690 selon densité,
+  `max-height:565px` en rendu). Labels ≥ 14px dans le viewBox, boîtes généreuses
+  (~50px de haut), flèches ≥ 24px de long pour que la pointe respire. Si un diagramme
+  paraît petit ou tassé au screenshot : agrandir les boîtes et les polices, PAS le viewBox.
+  Rien ne touche les bords, rien ne chevauche le footer.
 - Grands classiques déjà dessinés dans le template : encodeur-décodeur deux tours,
   Q/K/V, scaled dot-product, multi-head empilé, sinusoïdes PE, arbres d'héritage.
 
@@ -111,9 +116,13 @@ Séparateurs : chiffre fantôme, « Section 0N », items à carrés orange. Fin 
 
 1. `node scripts/mkfonts.js .claude/skills/metropolis-deck/fonts fonts.css.txt`,
    injecter dans le template (`/*FONTS*/`), injecter les SVG d'équations, écrire `index.html`.
-2. **Screenshot de CHAQUE slide de contenu** : `node scripts/qa.js index.html qa/ 2 3 4 6 ...`
-   puis **regarder chaque image** : chevauchements, coupures de ligne, tailles trop petites.
-   Corriger et re-vérifier.
+2. **Boucle de vérification visuelle : screenshot de CHAQUE slide de contenu**
+   (`node scripts/qa.js index.html qa/ 2 3 4 6 ...`) puis **regarder réellement chaque
+   image** (outil Read) et contrôler : chevauchements, texte coupé ou orphelin en fin de
+   ligne, éléments trop petits, flèches qui touchent les boîtes, marges, footer propre,
+   AUCUN « — » visible. **Itérer : corriger → réassembler → re-screenshoter la slide
+   corrigée → re-regarder**, jusqu'à zéro défaut. Ne jamais livrer une slide non vue.
+   Vérifier aussi les 5 visuels canvas (cover/séparateurs/fin) de la même façon.
 3. PDF : `node scripts/pdf.js index.html attention-deck.pdf 1-20`, vérifier le nombre de pages.
 4. Livrer : `index.html` + `assets/*.png` + PDF + README (navigation + export
    Chrome : Ctrl/Cmd+P, paysage, marges aucune, graphiques d'arrière-plan cochés).
