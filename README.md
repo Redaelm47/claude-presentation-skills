@@ -1,9 +1,10 @@
 # Attention Is All You Need · Présentation HTML
 
 Deck de **20 slides** sur le papier *Attention Is All You Need* (Vaswani et al., NeurIPS 2017),
-construit dans l'**identité « Syllia — Clarté »** (kit design du client : blanc minimal,
-accent émeraude unique, pills, ombres douces) avec des visuels d'ouverture générés selon
-le skill `canvas-design`. Les équations sont composées en **vrai LaTeX** (MathJax → SVG au build).
+dans le style **Metropolis** : l'esthétique du célèbre thème beamer des ingénieurs
+(blanc cassé, teal foncé, accent orange unique, plat et rigoureux). Les visuels d'ouverture
+sont générés selon le skill `canvas-design` et les équations composées en **vrai LaTeX**
+(MathJax → SVG au build).
 
 ![Cover](assets/cover.png)
 
@@ -71,19 +72,22 @@ Un PDF déjà généré (`attention-deck.pdf`) est fourni comme référence.
 
 ---
 
-## Identité visuelle appliquée (« Syllia — Clarté »)
+## Identité visuelle appliquée (style « Metropolis »)
 
-- **Couleurs** : accent émeraude `#0f9d76` (profond `#0a6b52`, teinte douce `#e7f4ee`),
-  encres fraîches `#11221c` / `#465650`, neutres `#8b968f`, filets `#e8ecea`,
-  fond canvas `#f5f8f6` avec halos aurora ; statuts : info `#3a6ff0`, brouillon ambre `#8a6a1a`.
-- **Typographie** : **Plus Jakarta Sans** (variable, UI et corps) ; **Lora** réservée aux grands
-  titres display, comme dans le kit. Polices embarquées en base64.
-- **Langage** : pills entièrement arrondies, cartes 20-22 px, ombres douces superposées,
-  filets fins, une seule couleur d'accent, point de statut « ● + mot ».
+- **Couleurs** : fond blanc cassé `#FAFAF8`, encre teal foncé `#23373b` (le duo signature
+  du thème beamer Metropolis), **accent orange unique `#EB811B`** (trait sous les titres,
+  éléments clés), neutres `#c3ccce` / `#5b7a80`, filets `#e4e6e2` ; bleu `#1f77b4` réservé
+  au pont K/V, ambre au masque optionnel.
+- **Typographie** : **Fira Sans** partout (la police de Metropolis), poids 400/600/700,
+  embarquée en base64. Surtitres en capitales espacées orange.
+- **Langage** : plat et rigoureux : pas d'ombres ni de pills, puces carrées, trait orange
+  fin sous chaque titre, chiffres fantômes sur les pages de section.
 - **Diagrammes techniques** (architecture, Q/K/V, scaled dot-product, multi-head, positional encoding) :
-  **SVG/HTML-CSS natifs** dans le style du kit : jamais via `canvas-design`.
-- **Visuels `canvas-design`** : cover, 3 séparateurs, slide de fin : avec le logo Syllia
-  (masque CSS recolorable) et la mascotte sur la slide de fin.
+  **SVG/HTML-CSS natifs**, boîtes à trait teal, jamais via `canvas-design`.
+- **Charts** : anatomie complète : axes, gridlines, labels de valeurs, échelles honnêtes
+  (mention explicite quand l'axe est tronqué).
+- **Visuels `canvas-design`** : cover, 3 séparateurs, slide de fin (philosophie
+  *« Attention métropolitaine »*).
 
 ---
 
