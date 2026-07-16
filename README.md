@@ -91,6 +91,16 @@ Un PDF déjà généré (`attention-deck.pdf`) est fourni comme référence.
 
 ---
 
+## Variante 3Blue1Brown
+
+Le dossier **`3b1b/`** contient la même présentation dans le style 3Blue1Brown :
+fond noir, typographie Computer Modern (CMU Serif), duo bleu `#58C4DD` / jaune
+`#FFD64F` de manim, grille de plan mathématique en fond, termes Q / K / V
+colorés dans les équations LaTeX. Même navigation, même export
+(`3b1b/index.html` + `3b1b/attention-deck-3b1b.pdf`).
+
+---
+
 ## Refaire une présentation dans ce style
 
 Le repo embarque un **skill Claude Code** : `.claude/skills/metropolis-deck/`.
