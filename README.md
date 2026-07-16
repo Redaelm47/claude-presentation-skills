@@ -101,15 +101,20 @@ colorés dans les équations LaTeX. Même navigation, même export
 
 ---
 
-## Refaire une présentation dans ce style
+## Refaire une présentation (n'importe quel sujet, n'importe quel thème)
 
-Le repo embarque un **skill Claude Code** : `.claude/skills/metropolis-deck/`.
-Ouvre une session Claude Code sur ce repo et demande simplement
-*« fais-moi une présentation sur <sujet> »* (ou invoque `/metropolis-deck`) :
-Claude suivra la recette complète (tokens du thème, diagrammes SVG, charts à
-anatomie complète, équations LaTeX, visuels canvas-design, QA visuelle, PDF).
-Le skill contient les polices Fira Sans, le template canonique et les scripts
-de build (`mkfonts`, `tex2svg`, `render`, `qa`, `pdf`).
+Le repo embarque un **système de skills Claude Code** dans `.claude/skills/` :
+
+| Skill | Rôle |
+|---|---|
+| **`presentation`** | Le point d'entrée : demande le thème, puis applique toutes les règles communes (structure HTML 16:9, max 4 puces, zéro « — », diagrammes SVG grands et orthogonaux, charts à anatomie complète, équations en vrai LaTeX, boucle de QA visuelle sur chaque slide, PDF). Contient les scripts partagés. |
+| `metropolis-deck` | Fiche thème Metropolis (clair, Fira Sans, accent orange) + template canonique + polices. |
+| `3b1b-deck` | Fiche thème 3Blue1Brown (noir, CMU Serif, scènes manim centrées, palette manim exacte) + template canonique + polices. |
+
+Ouvre une session Claude Code sur ce repo et dis simplement :
+*« Fais-moi une présentation de <sujet, avec ton contexte> avec le style <metropolis / 3b1b> »*.
+Si tu ne précises pas le style, Claude te le demandera. Pour ajouter un thème,
+suivre le contrat décrit dans `presentation/SKILL.md` § 0.
 
 ---
 

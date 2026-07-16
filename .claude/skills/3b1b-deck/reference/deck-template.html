@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attention Is All You Need · 3b1b</title>
+<style>
+/*FONTS*/
+:root{
+  --ink:#ffffff; --paper:#000000; --mid:#BBBBBB; --light:#333333;
+  --orange:#FFFF00; --blue:#58C4DD; --green:#83C167; --flow:#BBBBBB;
+  --deep:#F4D345; --asoft:rgba(255,255,0,.06); --infosoft:rgba(88,196,221,.09);
+  --field:#161616; --linestrong:#555555; --title:#ffffff; --ink2:#DDDDDD;
+  --ink3:#BBBBBB; --muted:#888888; --amber:#F0AC5F; --ambersoft:rgba(240,172,95,.08);
+  --stage-w:1280px; --stage-h:720px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; background:#000; font-family:'CMU Serif',Georgia,serif; color:var(--ink);}
+body{overflow:hidden;}
+#stage{position:absolute; top:50%; left:50%; width:var(--stage-w); height:var(--stage-h);
+  transform:translate(-50%,-50%) scale(var(--s,1)); transform-origin:center center;}
+.slide{position:absolute; inset:0; width:var(--stage-w); height:var(--stage-h);
+  background:#000; overflow:hidden; opacity:0; visibility:hidden; transition:opacity .35s ease;
+  display:flex; flex-direction:column;}
+.slide.active{opacity:1; visibility:visible;}
+
+/* ---- manim frame ---- */
+.scn{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:30px 64px 40px; min-height:0; text-align:center;}
+.kick{font-size:14px; letter-spacing:.22em; text-transform:uppercase; color:#777; margin-bottom:10px;}
+.scn h2{font-size:42px; font-weight:400; color:#fff; line-height:1.1;}
+.uline{display:block; margin:8px auto 4px;}
+.fig{flex:1; min-height:0; display:flex; align-items:center; justify-content:center; width:100%; margin-top:6px;}
+.fig svg{max-height:100%; width:auto; max-width:1060px;}
+.fig.eqbig{flex-direction:column;}
+.fig.eqbig svg{max-height:none; height:120px; width:auto; max-width:1080px;}
+.annrow{display:flex; gap:64px; justify-content:center; font-size:18px; color:#BBBBBB; font-style:italic;}
+.annrow i{font-style:normal; font-family:'CMU Serif',Georgia,serif;}
+.note{font-size:19px; color:#BBBBBB; font-style:italic; margin-top:12px; max-width:980px;}
+.note b{font-style:normal; font-weight:700;}
+.note sub{font-size:.7em;}
+.eqinline svg{height:26px; width:auto; vertical-align:-7px;}
+.eqrow{display:flex; gap:70px; justify-content:center; margin:14px 0 2px;}
+.eqrow svg{height:58px; width:auto;}
+.pageno{position:absolute; right:30px; bottom:20px; font-size:14px; color:#555;}
+.tbl{display:flex; justify-content:center; width:100%;}
+
+/* tables : manim dark */
+table.cmp{border-collapse:collapse; font-family:'CMU Serif',Georgia,serif; font-size:19px; min-width:760px;}
+table.cmp th,table.cmp td{text-align:left; padding:15px 26px; border-bottom:1px solid #333;}
+table.cmp th{color:#888; font-weight:400; letter-spacing:.08em; text-transform:uppercase; font-size:14px;}
+table.cmp td{color:#DDDDDD;}
+table.cmp tr td:first-child{color:#fff;}
+table.cmp .hi{color:#FFFF00; font-weight:700;}
+table.cmp tr.win td{background:rgba(255,255,0,.07);}
+.sub{font-size:.62em; vertical-align:sub;}
+.sup{font-size:.62em; vertical-align:super;}
+
+/* full-bleed */
+.slide.bleed{padding:0;}
+.slide.bleed img{width:100%; height:100%; object-fit:cover; display:block;}
+
+/* ---- diagram primitives : manim ---- */
+.d-box{fill:#000; stroke:#fff; stroke-width:2;}
+.d-attn{fill:var(--asoft); stroke:#FFFF00; stroke-width:2;}
+.d-attn2{fill:var(--infosoft); stroke:#58C4DD; stroke-width:2;}
+.d-ffn{fill:rgba(131,193,103,.08); stroke:#83C167; stroke-width:2;}
+.d-norm{fill:#1d1d1d; stroke:none;}
+.d-lab{font-family:'CMU Serif',Georgia,serif; font-size:16.5px; fill:#fff; font-weight:400;}
+.d-lab.s{font-size:14px; fill:#BBBBBB;}
+.d-lab.w{fill:#000;}
+.d-lab.b{font-weight:700;}
+.fl{stroke:#BBBBBB; stroke-width:2.2; fill:none;}
+.fl.o{stroke:#FFFF00;}
+.fl.bl{stroke:#58C4DD;}
+.d-cap{font-family:'CMU Serif',Georgia,serif; font-size:13.5px; letter-spacing:.14em; text-transform:uppercase; fill:#888;}
+
+/* ---- nav ---- */
+#nav{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:30;
+  display:flex; align-items:center; gap:14px; background:rgba(20,20,20,.92); border:1px solid #333;
+  color:#ddd; padding:8px 16px; border-radius:999px; font-family:Georgia,serif; font-size:12px;
+  opacity:0; transition:opacity .3s;}
+body:hover #nav{opacity:1;}
+#nav button{background:none; border:none; color:#ddd; cursor:pointer; font-size:16px; padding:2px 6px;}
+#nav .count{min-width:52px; text-align:center;}
+#progress{position:fixed; top:0; left:0; height:3px; background:#FFFF00; z-index:30; width:0; transition:width .3s;}
+#hint{position:fixed; bottom:18px; right:20px; z-index:30; font-family:Georgia,serif; font-size:11px;
+  color:#888; background:rgba(20,20,20,.8); padding:6px 12px; border-radius:6px; opacity:0; transition:opacity .4s;}
+body:hover #hint{opacity:1;}
+
+/* ---- print ---- */
+@page{size:1280px 720px; margin:0;}
+@media print{
+  html,body{background:#000; overflow:visible; height:auto;}
+  #nav,#progress,#hint{display:none !important;}
+  #defs-svg{display:block !important; position:absolute; width:0; height:0;}
+  #stage{position:static; transform:none; width:auto; height:auto;}
+  .slide{position:relative; inset:auto; opacity:1 !important; visibility:visible !important;
+    width:1280px; height:720px; page-break-after:always; break-after:page; transition:none;}
+  .slide:last-child{page-break-after:auto;}
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.slide{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+#defs-svg{position:absolute; width:0; height:0; overflow:hidden;}
+</style>
+</head>
+<body>
+
+<svg id="defs-svg" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#BBBBBB"/></marker>
+    <marker id="ahO" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FFFF00"/></marker>
+    <marker id="ahB" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#58C4DD"/></marker>
+    <marker id="ahG" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#FFFF00"/></marker>
+  </defs>
+</svg>
+
+<div id="stage">
+
+<section class="slide bleed active"><img src="assets/cover.png" alt="Attention Is All You Need"></section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 0 · Contexte, 2017</div>
+    <h2>Les limites des RNN &amp; LSTM</h2>
+    <svg class="uline" width="604" height="14" viewBox="0 0 604 14"><path d="M4 8 C 169 3, 423 12, 600 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 470">
+        <!-- long information path -->
+        <path d="M72 168 C 180 78, 348 78, 456 168" class="fl o" stroke-dasharray="5 6" stroke-width="2.5"/>
+        <circle cx="72" cy="168" r="5.5" fill="var(--orange)"/>
+        <circle cx="456" cy="168" r="5.5" fill="var(--orange)"/>
+        <text x="264" y="70" text-anchor="middle" class="d-lab b" fill="var(--orange)">chemin d'information = O(n)</text>
+        <!-- recurrent cells -->
+        <g>
+          <rect x="30" y="196" width="84" height="66" rx="12" class="d-box"/>
+          <rect x="158" y="196" width="84" height="66" rx="12" class="d-box"/>
+          <rect x="286" y="196" width="84" height="66" rx="12" class="d-box"/>
+          <rect x="414" y="196" width="84" height="66" rx="12" class="d-box"/>
+          <text x="72" y="236" text-anchor="middle" class="d-lab b">h₁</text>
+          <text x="200" y="236" text-anchor="middle" class="d-lab b">h₂</text>
+          <text x="328" y="236" text-anchor="middle" class="d-lab b">h₃</text>
+          <text x="456" y="236" text-anchor="middle" class="d-lab b">h₄</text>
+        </g>
+        <!-- arrows between cells -->
+        <g marker-end="url(#ah)">
+          <line x1="114" y1="229" x2="152" y2="229" class="fl"/>
+          <line x1="242" y1="229" x2="280" y2="229" class="fl"/>
+          <line x1="370" y1="229" x2="408" y2="229" class="fl"/>
+        </g>
+        <!-- inputs -->
+        <g marker-end="url(#ah)">
+          <line x1="72" y1="330" x2="72" y2="270" class="fl"/>
+          <line x1="200" y1="330" x2="200" y2="270" class="fl"/>
+          <line x1="328" y1="330" x2="328" y2="270" class="fl"/>
+          <line x1="456" y1="330" x2="456" y2="270" class="fl"/>
+        </g>
+        <g class="d-lab" text-anchor="middle">
+          <text x="72" y="362">x₁</text><text x="200" y="362">x₂</text>
+          <text x="328" y="362">x₃</text><text x="456" y="362">x₄</text>
+        </g>
+        <text x="264" y="428" text-anchor="middle" class="d-cap">récurrence : chaque état attend le précédent</text>
+      </svg></div>
+    <p class="note">Calcul <b style="color:#58C4DD">séquentiel</b> : h<sub>t</sub> attend h<sub>t−1</sub> · le signal se <b style="color:#FFFF00">dilue</b> avec la distance.</p>
+  </div>
+  <div class="pageno">02 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 0 · Le problème</div>
+    <h2>Le traitement séquentiel</h2>
+    <svg class="uline" width="490" height="14" viewBox="0 0 490 14"><path d="M4 8 C 137 3, 343 12, 486 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 470">
+        <!-- Recurrent panel -->
+        <text x="30" y="42" class="d-lab b">Récurrent</text>
+        <path d="M70 116 C 180 44, 360 44, 470 116" class="fl o" stroke-width="2.5"/>
+        <text x="270" y="42" text-anchor="middle" class="d-lab" fill="var(--orange)">4 sauts</text>
+        <g marker-end="url(#ah)">
+          <line x1="84" y1="132" x2="156" y2="132" class="fl"/>
+          <line x1="184" y1="132" x2="256" y2="132" class="fl"/>
+          <line x1="284" y1="132" x2="356" y2="132" class="fl"/>
+          <line x1="384" y1="132" x2="456" y2="132" class="fl"/>
+        </g>
+        <g fill="var(--mid)">
+          <circle cx="70" cy="132" r="12"/><circle cx="170" cy="132" r="12"/><circle cx="270" cy="132" r="12"/>
+          <circle cx="370" cy="132" r="12"/><circle cx="470" cy="132" r="12"/>
+        </g>
+        <!-- divider -->
+        <line x1="30" y1="222" x2="510" y2="222" stroke="var(--light)" stroke-width="1.5"/>
+        <!-- Self-attention panel -->
+        <text x="30" y="272" class="d-lab b">Self-attention</text>
+        <path d="M70 346 C 180 270, 360 270, 470 346" class="fl o" stroke-width="2.5" marker-end="url(#ahO)"/>
+        <text x="270" y="268" text-anchor="middle" class="d-lab" fill="var(--orange)">1 saut</text>
+        <!-- full connectivity, whisper-light -->
+        <g stroke="var(--light)" stroke-width="1.5" fill="none">
+          <path d="M70 346 C 140 300, 200 300, 270 346"/>
+          <path d="M70 346 C 170 284, 270 284, 370 346"/>
+          <path d="M170 346 C 240 300, 300 300, 370 346"/>
+          <path d="M170 346 C 270 284, 370 284, 470 346"/>
+          <path d="M270 346 C 340 300, 400 300, 470 346"/>
+        </g>
+        <g fill="var(--ink)">
+          <circle cx="70" cy="362" r="12"/><circle cx="170" cy="362" r="12"/><circle cx="270" cy="362" r="12"/>
+          <circle cx="370" cy="362" r="12"/><circle cx="470" cy="362" r="12"/>
+        </g>
+        <text x="270" y="438" text-anchor="middle" class="d-cap">toute paire de mots : connexion directe</text>
+      </svg></div>
+    <p class="note">Récurrent : le chemin d'information croît en <b style="color:#58C4DD">O(n)</b> · Self-attention : <b style="color:#FFFF00">un saut</b>, toujours.</p>
+  </div>
+  <div class="pageno">03 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 0 · Le problème</div>
+    <h2>Rompre avec la récurrence</h2>
+    <svg class="uline" width="509" height="14" viewBox="0 0 509 14"><path d="M4 8 C 143 3, 356 12, 505 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><div class="tbl"><table class="cmp">
+          <thead><tr><th>Type de couche</th><th>Op. séquentielles</th><th>Chemin max</th></tr></thead>
+          <tbody>
+            <tr><td>Récurrent</td><td>O(n)</td><td>O(n)</td></tr>
+            <tr><td>Convolution</td><td>O(1)</td><td>O(log<span class="sub">k</span> n)</td></tr>
+            <tr class="win"><td>Self-attention</td><td class="hi">O(1)</td><td class="hi">O(1)</td></tr>
+          </tbody>
+        </table></div></div>
+    <p class="note">n = longueur de séquence · k = largeur du noyau · source : Vaswani et al. 2017, table 1.</p>
+  </div>
+  <div class="pageno">04 / 20</div>
+</section>
+
+<section class="slide bleed"><img src="assets/section-architecture.png" alt="Partie 1 : architecture"></section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 1 · Architecture</div>
+    <h2>Encodeur &amp; Décodeur</h2>
+    <svg class="uline" width="471" height="14" viewBox="0 0 471 14"><path d="M4 8 C 132 3, 330 12, 467 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 690">
+        <!-- ===== top output ===== -->
+        <text x="390" y="30" text-anchor="middle" class="d-cap">probabilités de sortie</text>
+        <line x1="390" y1="96" x2="390" y2="44" class="fl" marker-end="url(#ah)"/>
+        <rect x="305" y="96" width="170" height="44" rx="8" class="d-box"/>
+        <text x="390" y="123" text-anchor="middle" class="d-lab">Linear + Softmax</text>
+        <line x1="390" y1="180" x2="390" y2="140" class="fl" marker-end="url(#ah)"/>
+
+        <!-- ===== decoder tower ===== -->
+        <rect x="295" y="180" width="190" height="386" rx="14" fill="none" stroke="var(--mid)" stroke-width="1.5" stroke-dasharray="5 5"/>
+        <rect x="305" y="200" width="170" height="24" rx="6" class="d-norm"/>
+        <text x="390" y="216" text-anchor="middle" class="d-lab s">Add &amp; Norm</text>
+        <rect x="305" y="250" width="170" height="48" rx="8" class="d-ffn"/>
+        <text x="390" y="279" text-anchor="middle" class="d-lab">Feed Forward</text>
+        <rect x="305" y="324" width="170" height="24" rx="6" class="d-norm"/>
+        <text x="390" y="340" text-anchor="middle" class="d-lab s">Add &amp; Norm</text>
+        <rect x="305" y="374" width="170" height="48" rx="8" class="d-attn2"/>
+        <text x="390" y="394" text-anchor="middle" class="d-lab">Attention</text>
+        <text x="390" y="410" text-anchor="middle" class="d-lab s">encodeur → décodeur</text>
+        <rect x="305" y="432" width="170" height="24" rx="6" class="d-norm"/>
+        <text x="390" y="448" text-anchor="middle" class="d-lab s">Add &amp; Norm</text>
+        <rect x="305" y="482" width="170" height="48" rx="8" class="d-attn"/>
+        <text x="390" y="502" text-anchor="middle" class="d-lab">Self-Attention</text>
+        <text x="390" y="518" text-anchor="middle" class="d-lab s">masquée</text>
+        <!-- decoder internal flow (bottom → top) -->
+        <g marker-end="url(#ah)">
+          <line x1="390" y1="482" x2="390" y2="458" class="fl"/>
+          <line x1="390" y1="432" x2="390" y2="424" class="fl" marker-end=""/>
+          <line x1="390" y1="374" x2="390" y2="350" class="fl"/>
+          <line x1="390" y1="324" x2="390" y2="300" class="fl"/>
+          <line x1="390" y1="250" x2="390" y2="226" class="fl"/>
+        </g>
+        <line x1="390" y1="432" x2="390" y2="422" class="fl"/>
+
+        <!-- ===== encoder tower ===== -->
+        <rect x="55" y="304" width="190" height="262" rx="14" fill="none" stroke="var(--mid)" stroke-width="1.5" stroke-dasharray="5 5"/>
+        <rect x="65" y="324" width="170" height="24" rx="6" class="d-norm"/>
+        <text x="150" y="340" text-anchor="middle" class="d-lab s">Add &amp; Norm</text>
+        <rect x="65" y="374" width="170" height="48" rx="8" class="d-ffn"/>
+        <text x="150" y="403" text-anchor="middle" class="d-lab">Feed Forward</text>
+        <rect x="65" y="432" width="170" height="24" rx="6" class="d-norm"/>
+        <text x="150" y="448" text-anchor="middle" class="d-lab s">Add &amp; Norm</text>
+        <rect x="65" y="482" width="170" height="48" rx="8" class="d-attn"/>
+        <text x="150" y="502" text-anchor="middle" class="d-lab">Multi-Head</text>
+        <text x="150" y="518" text-anchor="middle" class="d-lab s">Self-Attention</text>
+        <!-- encoder internal flow -->
+        <g marker-end="url(#ah)">
+          <line x1="150" y1="482" x2="150" y2="458" class="fl"/>
+          <line x1="150" y1="374" x2="150" y2="350" class="fl"/>
+        </g>
+        <line x1="150" y1="432" x2="150" y2="422" class="fl"/>
+
+        <!-- encoder → decoder bridge (K, V) -->
+        <path d="M150 324 L150 264 L264 264 L264 398 L297 398" class="fl bl" marker-end="url(#ahB)"/>
+        <text x="207" y="252" text-anchor="middle" class="d-lab b" fill="var(--blue)">K, V</text>
+
+        <!-- ===== inputs ===== -->
+        <g marker-end="url(#ah)">
+          <line x1="150" y1="600" x2="150" y2="536" class="fl"/>
+          <line x1="390" y1="600" x2="390" y2="536" class="fl"/>
+        </g>
+        <circle cx="150" cy="600" r="4" fill="var(--flow)"/>
+        <circle cx="390" cy="600" r="4" fill="var(--flow)"/>
+        <text x="150" y="631" text-anchor="middle" class="d-lab">Embedding + PE</text>
+        <text x="390" y="631" text-anchor="middle" class="d-lab">Embedding + PE</text>
+        <text x="150" y="662" text-anchor="middle" class="d-cap">encodeur · ×6</text>
+        <text x="390" y="662" text-anchor="middle" class="d-cap">décodeur · ×6</text>
+      </svg></div>
+    <p class="note"><b style="color:#58C4DD">N = 6</b> couches de chaque côté · d<sub>model</sub> = <b style="color:#58C4DD">512</b> · d<sub>ff</sub> = 2048.</p>
+  </div>
+  <div class="pageno">06 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 1 · Architecture</div>
+    <h2>La connexion résiduelle</h2>
+    <svg class="uline" width="471" height="14" viewBox="0 0 471 14"><path d="M4 8 C 132 3, 330 12, 467 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 560">
+        <text x="250" y="66" text-anchor="middle" class="d-lab b">LayerNorm( x + Sublayer(x) )</text>
+        <!-- output arrow -->
+        <line x1="250" y1="178" x2="250" y2="96" class="fl" marker-end="url(#ah)"/>
+        <!-- LayerNorm -->
+        <rect x="160" y="178" width="180" height="52" rx="9" class="d-box"/>
+        <text x="250" y="210" text-anchor="middle" class="d-lab">LayerNorm</text>
+        <!-- add circle -->
+        <line x1="250" y1="276" x2="250" y2="230" class="fl" marker-end="url(#ah)"/>
+        <circle cx="250" cy="306" r="28" fill="#000" stroke="#fff" stroke-width="2"/>
+        <text x="250" y="315" text-anchor="middle" class="d-lab b" font-size="22">+</text>
+        <!-- sublayer -->
+        <line x1="250" y1="390" x2="250" y2="334" class="fl" marker-end="url(#ah)"/>
+        <rect x="150" y="390" width="200" height="64" rx="10" class="d-attn"/>
+        <text x="250" y="416" text-anchor="middle" class="d-lab">Sous-couche</text>
+        <text x="250" y="436" text-anchor="middle" class="d-lab s">Attention ou Feed Forward</text>
+        <!-- input -->
+        <line x1="250" y1="500" x2="250" y2="454" class="fl" marker-end="url(#ah)"/>
+        <circle cx="250" cy="508" r="5.5" fill="var(--ink)"/>
+        <text x="278" y="514" class="d-lab b">x</text>
+        <!-- residual bypass, orthogonal -->
+        <path d="M250 478 L430 478 L430 306 L282 306" class="fl o" stroke-dasharray="6 6" stroke-width="2.5" marker-end="url(#ahO)"/>
+        <text x="446" y="396" class="d-lab b" fill="var(--orange)" transform="rotate(-90 446 396)" text-anchor="middle">identité · x</text>
+      </svg></div>
+    <p class="note"><span class="eqinline">{{EQRES}}</span> : le signal d'origine circule <b style="color:#FFFF00">sans obstacle</b>.</p>
+  </div>
+  <div class="pageno">07 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 2 · Self-attention</div>
+    <h2>Query, Key, Value</h2>
+    <svg class="uline" width="357" height="14" viewBox="0 0 357 14"><path d="M4 8 C 100 3, 250 12, 353 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 560">
+        <text x="270" y="30" text-anchor="middle" class="d-cap">séquence d'entrée X</text>
+        <!-- token row -->
+        <rect x="70" y="46" width="400" height="54" rx="10" fill="#000" stroke="#555555" stroke-width="2"/>
+        <g class="d-lab" text-anchor="middle">
+          <text x="120" y="79">le</text><text x="220" y="79">chat</text><text x="320" y="79">noir</text><text x="420" y="79">dort</text>
+        </g>
+        <g stroke="var(--light)"><line x1="170" y1="56" x2="170" y2="90"/><line x1="270" y1="56" x2="270" y2="90"/><line x1="370" y1="56" x2="370" y2="90"/></g>
+        <!-- three projections, straight down -->
+        <g marker-end="url(#ah)">
+          <line x1="130" y1="100" x2="130" y2="154" class="fl"/>
+          <line x1="270" y1="100" x2="270" y2="154" class="fl"/>
+          <line x1="410" y1="100" x2="410" y2="154" class="fl"/>
+        </g>
+        <rect x="75" y="160" width="110" height="56" rx="9" class="d-attn"/>
+        <text x="130" y="188" text-anchor="middle" class="d-lab">Q = X·W<tspan class="sub">Q</tspan></text>
+        <text x="130" y="204" text-anchor="middle" class="d-lab s">requêtes</text>
+        <rect x="215" y="160" width="110" height="56" rx="9" class="d-attn2"/>
+        <text x="270" y="188" text-anchor="middle" class="d-lab">K = X·W<tspan class="sub">K</tspan></text>
+        <text x="270" y="204" text-anchor="middle" class="d-lab s">clés</text>
+        <rect x="355" y="160" width="110" height="56" rx="9" class="d-ffn"/>
+        <text x="410" y="188" text-anchor="middle" class="d-lab">V = X·W<tspan class="sub">V</tspan></text>
+        <text x="410" y="204" text-anchor="middle" class="d-lab s">valeurs</text>
+        <!-- Q and K into scores -->
+        <g marker-end="url(#ah)">
+          <line x1="130" y1="216" x2="130" y2="294" class="fl"/>
+          <line x1="270" y1="216" x2="270" y2="294" class="fl"/>
+        </g>
+        <rect x="70" y="300" width="260" height="66" rx="10" class="d-box"/>
+        <text x="200" y="328" text-anchor="middle" class="d-lab">softmax( Q·Kᵀ / √d<tspan class="sub">k</tspan> )</text>
+        <text x="200" y="350" text-anchor="middle" class="d-lab s">poids d'attention · matrice n × n</text>
+        <!-- V straight down, scores down, into output -->
+        <g marker-end="url(#ah)">
+          <line x1="200" y1="366" x2="200" y2="438" class="fl"/>
+          <line x1="410" y1="216" x2="410" y2="438" class="fl"/>
+        </g>
+        <rect x="110" y="444" width="360" height="60" rx="10" fill="var(--asoft)" stroke="var(--orange)" stroke-width="1.5"/>
+        <text x="290" y="470" text-anchor="middle" class="d-lab">sortie = poids · V</text>
+        <text x="290" y="490" text-anchor="middle" class="d-lab s">chaque mot devient un mélange contextuel</text>
+      </svg></div>
+    <p class="note">Trois projections apprises : chaque mot devient une <b style="color:#58C4DD">Query</b>, une <b style="color:#5CD0B3">Key</b> et une <b style="color:#FFFF00">Value</b>.</p>
+  </div>
+  <div class="pageno">08 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 2 · Self-attention</div>
+    <h2>La formule de l'attention</h2>
+    <svg class="uline" width="560" height="14" viewBox="0 0 560 14"><path d="M4 8 C 157 3, 392 12, 556 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig eqbig" style="flex-direction:column; gap:26px;">
+      <div>{{EQATT}}</div>
+      <div class="annrow">
+        <span><i style="color:#58C4DD">Q·Kᵀ</i> : similarité des paires</span>
+        <span><i style="color:#BBBBBB">softmax</i> : poids qui somment à 1</span>
+        <span><i style="color:#FFFF00">V</i> : mélange des valeurs</span>
+      </div>
+    </div>
+    <p class="note">softmax ligne par ligne : chaque sortie est un <b style="color:#FFFF00">mélange pondéré</b> de toute la séquence.</p>
+  </div>
+  <div class="pageno">09 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 2 · Self-attention</div>
+    <h2>Scaled dot-product</h2>
+    <svg class="uline" width="376" height="14" viewBox="0 0 376 14"><path d="M4 8 C 105 3, 263 12, 372 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 560">
+        <!-- output -->
+        <text x="230" y="34" text-anchor="middle" class="d-cap" fill="var(--orange)">sortie</text>
+        <line x1="230" y1="100" x2="230" y2="48" class="fl o" marker-end="url(#ahO)"/>
+        <!-- stack -->
+        <rect x="130" y="100" width="200" height="50" rx="9" class="d-ffn"/>
+        <text x="230" y="131" text-anchor="middle" class="d-lab">MatMul · V</text>
+        <line x1="230" y1="180" x2="230" y2="156" class="fl" marker-end="url(#ah)"/>
+        <rect x="130" y="180" width="200" height="50" rx="9" class="d-attn"/>
+        <text x="230" y="211" text-anchor="middle" class="d-lab">Softmax</text>
+        <line x1="230" y1="260" x2="230" y2="236" class="fl" marker-end="url(#ah)"/>
+        <rect x="130" y="260" width="200" height="50" rx="9" fill="var(--ambersoft)" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="230" y="291" text-anchor="middle" class="d-lab s">Masque (optionnel)</text>
+        <line x1="230" y1="340" x2="230" y2="316" class="fl" marker-end="url(#ah)"/>
+        <rect x="130" y="340" width="200" height="50" rx="9" class="d-attn"/>
+        <text x="230" y="371" text-anchor="middle" class="d-lab">Échelle · 1 / √d<tspan class="sub">k</tspan></text>
+        <line x1="230" y1="420" x2="230" y2="396" class="fl" marker-end="url(#ah)"/>
+        <rect x="130" y="420" width="200" height="50" rx="9" class="d-box"/>
+        <text x="230" y="451" text-anchor="middle" class="d-lab">MatMul · Q·Kᵀ</text>
+        <!-- inputs Q K -->
+        <g marker-end="url(#ah)">
+          <line x1="180" y1="518" x2="180" y2="476" class="fl"/>
+          <line x1="280" y1="518" x2="280" y2="476" class="fl"/>
+        </g>
+        <text x="180" y="546" text-anchor="middle" class="d-lab b">Q</text>
+        <text x="280" y="546" text-anchor="middle" class="d-lab b">K</text>
+        <!-- V routed orthogonally up the right side -->
+        <path d="M450 518 L450 125 L336 125" class="fl" marker-end="url(#ah)"/>
+        <text x="450" y="546" text-anchor="middle" class="d-lab b">V</text>
+      </svg></div>
+    <p class="note">Sans l'échelle <b style="color:#58C4DD">1/√d<sub>k</sub></b>, le softmax sature et les gradients s'évanouissent.</p>
+  </div>
+  <div class="pageno">10 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 2 · Self-attention</div>
+    <h2>Multi-head attention</h2>
+    <svg class="uline" width="414" height="14" viewBox="0 0 414 14"><path d="M4 8 C 116 3, 290 12, 410 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 600">
+        <!-- output -->
+        <text x="270" y="34" text-anchor="middle" class="d-cap" fill="var(--orange)">sortie · d_model</text>
+        <line x1="270" y1="112" x2="270" y2="48" class="fl o" marker-end="url(#ahO)"/>
+        <!-- final linear -->
+        <rect x="195" y="112" width="150" height="48" rx="9" class="d-ffn"/>
+        <text x="270" y="141" text-anchor="middle" class="d-lab">Linear · W<tspan class="sup">O</tspan></text>
+        <line x1="270" y1="212" x2="270" y2="166" class="fl" marker-end="url(#ah)"/>
+        <!-- concat -->
+        <rect x="185" y="212" width="170" height="48" rx="9" class="d-box"/>
+        <text x="270" y="241" text-anchor="middle" class="d-lab">Concat</text>
+        <line x1="270" y1="322" x2="270" y2="266" class="fl" marker-end="url(#ah)"/>
+        <!-- attention heads (stacked) -->
+        <rect x="136" y="306" width="300" height="70" rx="11" class="d-attn" opacity=".35"/>
+        <rect x="128" y="314" width="300" height="70" rx="11" class="d-attn" opacity=".6"/>
+        <rect x="120" y="322" width="300" height="70" rx="11" class="d-attn"/>
+        <text x="270" y="352" text-anchor="middle" class="d-lab">Scaled Dot-Product Attention</text>
+        <text x="270" y="372" text-anchor="middle" class="d-lab s">h = 8 têtes en parallèle</text>
+        <!-- linear projections (stacked) -->
+        <g marker-end="url(#ah)">
+          <line x1="150" y1="466" x2="150" y2="398" class="fl"/>
+          <line x1="270" y1="466" x2="270" y2="398" class="fl"/>
+          <line x1="390" y1="466" x2="390" y2="398" class="fl"/>
+        </g>
+        <g>
+          <rect x="106" y="454" width="110" height="46" rx="8" class="d-box" opacity=".35" transform="translate(12,-12)"/>
+          <rect x="106" y="454" width="110" height="46" rx="8" class="d-box" opacity=".6" transform="translate(6,-6)"/>
+          <rect x="95" y="466" width="110" height="46" rx="8" class="d-box"/>
+          <text x="150" y="494" text-anchor="middle" class="d-lab">Linear</text>
+          <rect x="226" y="454" width="110" height="46" rx="8" class="d-box" opacity=".35" transform="translate(12,-12)"/>
+          <rect x="226" y="454" width="110" height="46" rx="8" class="d-box" opacity=".6" transform="translate(6,-6)"/>
+          <rect x="215" y="466" width="110" height="46" rx="8" class="d-box"/>
+          <text x="270" y="494" text-anchor="middle" class="d-lab">Linear</text>
+          <rect x="346" y="454" width="110" height="46" rx="8" class="d-box" opacity=".35" transform="translate(12,-12)"/>
+          <rect x="346" y="454" width="110" height="46" rx="8" class="d-box" opacity=".6" transform="translate(6,-6)"/>
+          <rect x="335" y="466" width="110" height="46" rx="8" class="d-box"/>
+          <text x="390" y="494" text-anchor="middle" class="d-lab">Linear</text>
+        </g>
+        <!-- inputs -->
+        <g marker-end="url(#ah)">
+          <line x1="150" y1="556" x2="150" y2="516" class="fl"/>
+          <line x1="270" y1="556" x2="270" y2="516" class="fl"/>
+          <line x1="390" y1="556" x2="390" y2="516" class="fl"/>
+        </g>
+        <text x="150" y="586" text-anchor="middle" class="d-lab b">V</text>
+        <text x="270" y="586" text-anchor="middle" class="d-lab b">K</text>
+        <text x="390" y="586" text-anchor="middle" class="d-lab b">Q</text>
+      </svg></div>
+    <p class="note"><b style="color:#FFFF00">h = 8</b> têtes en parallèle · d<sub>k</sub> = d<sub>v</sub> = <b style="color:#58C4DD">64</b> · chaque tête apprend un sous-espace.</p>
+  </div>
+  <div class="pageno">11 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 2 · L'ordre des mots</div>
+    <h2>Positional encoding</h2>
+    <svg class="uline" width="500" height="14" viewBox="0 0 500 14"><path d="M4 8 C 140 3, 350 12, 496 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="eqrow"><span>{{EQPE1}}</span><span>{{EQPE2}}</span></div>
+    <div class="fig"><svg viewBox="0 0 540 420">
+        <text x="270" y="28" text-anchor="middle" class="d-cap">dimensions à fréquences croissantes</text>
+        <g stroke="var(--light)" stroke-width="1.5">
+          <line x1="30" y1="80" x2="510" y2="80"/><line x1="30" y1="200" x2="510" y2="200"/><line x1="30" y1="320" x2="510" y2="320"/>
+        </g>
+        <polyline points="{{W1}}" fill="none" stroke="var(--orange)" stroke-width="3"/>
+        <polyline points="{{W2}}" fill="none" stroke="var(--blue)" stroke-width="3"/>
+        <polyline points="{{W3}}" fill="none" stroke="var(--green)" stroke-width="3"/>
+        <line x1="30" y1="386" x2="180" y2="386" class="fl" marker-end="url(#ah)"/>
+        <text x="192" y="391" class="d-lab s">position dans la séquence</text>
+      </svg></div>
+    <p class="note">Longueurs d'onde en <b style="color:#FFFF00">progression géométrique</b> : l'ordre devient un signal.</p>
+  </div>
+  <div class="pageno">12 / 20</div>
+</section>
+
+<section class="slide bleed"><img src="assets/section-results.png" alt="Partie 3 : résultats"></section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 3 · WMT 2014</div>
+    <h2>Scores BLEU</h2>
+    <svg class="uline" width="243" height="14" viewBox="0 0 243 14"><path d="M4 8 C 68 3, 170 12, 239 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 460">
+        <text x="300" y="30" text-anchor="middle" class="d-cap">BLEU · EN → DE · WMT 2014</text>
+        <!-- gridlines: 20→x150, 25→x330, 30→x510 (36px / BLEU) -->
+        <g stroke="var(--light)" stroke-width="1.5" stroke-dasharray="3 5">
+          <line x1="330" y1="60" x2="330" y2="366"/><line x1="510" y1="60" x2="510" y2="366"/>
+        </g>
+        <!-- bars: width = (BLEU − 20) × 36 -->
+        <g>
+          <rect x="150" y="72" width="165.6" height="44" fill="#444444"/>
+          <text x="140" y="99" text-anchor="end" class="d-lab s">GNMT + RL</text>
+          <text x="326" y="99" class="d-lab s">24.6</text>
+        </g>
+        <g>
+          <rect x="150" y="146" width="185.8" height="44" fill="#444444"/>
+          <text x="140" y="173" text-anchor="end" class="d-lab s">ConvS2S</text>
+          <text x="346" y="173" class="d-lab s">25.2</text>
+        </g>
+        <g>
+          <rect x="150" y="220" width="262.8" height="44" fill="#58C4DD"/>
+          <text x="140" y="247" text-anchor="end" class="d-lab s">Transf. base</text>
+          <text x="423" y="247" class="d-lab s">27.3</text>
+        </g>
+        <g>
+          <rect x="150" y="294" width="302.4" height="48" fill="var(--orange)"/>
+          <text x="140" y="323" text-anchor="end" class="d-lab b">Transf. big</text>
+          <text x="463" y="323" class="d-lab b" fill="var(--orange)">28.4</text>
+        </g>
+        <!-- axis -->
+        <line x1="150" y1="60" x2="150" y2="366" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="150" y1="366" x2="520" y2="366" stroke="var(--ink)" stroke-width="1.5"/>
+        <g class="d-lab s" fill="var(--mid)" text-anchor="middle">
+          <text x="150" y="392">20</text><text x="330" y="392">25</text><text x="510" y="392">30</text>
+        </g>
+        <text x="300" y="436" text-anchor="middle" class="d-cap">échelle linéaire · base 20</text>
+      </svg></div>
+    <p class="note"><b style="color:#FFFF00">28.4</b> en EN→DE et <b style="color:#FFFF00">41.8</b> en EN→FR : état de l'art · source : Vaswani et al. 2017, table 2 · échelle tronquée à 20.</p>
+  </div>
+  <div class="pageno">14 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 3 · Efficacité</div>
+    <h2>Coût d'entraînement</h2>
+    <svg class="uline" width="395" height="14" viewBox="0 0 395 14"><path d="M4 8 C 111 3, 276 12, 391 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><div class="tbl"><table class="cmp">
+          <thead><tr><th>Modèle</th><th>EN-DE</th><th>EN-FR</th><th>FLOPs (EN-FR)</th></tr></thead>
+          <tbody>
+            <tr><td>GNMT + RL</td><td>24.6</td><td>39.9</td><td>1.4 · 10<span class="sup">20</span></td></tr>
+            <tr><td>ConvS2S</td><td>25.2</td><td>40.5</td><td>1.5 · 10<span class="sup">20</span></td></tr>
+            <tr><td>Transformer base</td><td>27.3</td><td>38.1</td><td>3.3 · 10<span class="sup">18</span></td></tr>
+            <tr class="win"><td>Transformer big</td><td class="hi">28.4</td><td class="hi">41.8</td><td>2.3 · 10<span class="sup">19</span></td></tr>
+          </tbody>
+        </table></div></div>
+    <p class="note">base : <b style="color:#58C4DD">12 h</b> sur 8 GPU P100 · big : <b style="color:#58C4DD">3,5 jours</b> · ≈ 10× moins de FLOPs que les SOTA.</p>
+  </div>
+  <div class="pageno">15 / 20</div>
+</section>
+
+<section class="slide bleed"><img src="assets/section-impact.png" alt="Partie 4 : impact"></section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 4 · Héritage</div>
+    <h2>BERT &amp; GPT</h2>
+    <svg class="uline" width="300" height="14" viewBox="0 0 300 14"><path d="M4 8 C 84 3, 210 12, 296 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 560">
+        <!-- root -->
+        <rect x="175" y="46" width="190" height="56" rx="10" fill="#f2f4f6"/>
+        <text x="270" y="74" text-anchor="middle" class="d-lab w">Transformer</text>
+        <text x="270" y="92" text-anchor="middle" class="d-lab s" fill="var(--mid)" style="fill:#666">2017</text>
+        <!-- orthogonal branches -->
+        <path d="M270 102 L270 140 L140 140 L140 178" class="fl" marker-end="url(#ah)"/>
+        <path d="M270 102 L270 140 L400 140 L400 178" class="fl" marker-end="url(#ah)"/>
+        <!-- BERT / GPT -->
+        <rect x="55" y="184" width="170" height="64" rx="10" class="d-attn2"/>
+        <text x="140" y="212" text-anchor="middle" class="d-lab b">BERT</text>
+        <text x="140" y="232" text-anchor="middle" class="d-lab s">encodeur seul · 2018</text>
+        <rect x="315" y="184" width="170" height="64" rx="10" class="d-attn"/>
+        <text x="400" y="212" text-anchor="middle" class="d-lab b">GPT</text>
+        <text x="400" y="232" text-anchor="middle" class="d-lab s">décodeur seul · 2018</text>
+        <!-- descendants -->
+        <line x1="140" y1="248" x2="140" y2="298" class="fl" marker-end="url(#ah)"/>
+        <line x1="400" y1="248" x2="400" y2="298" class="fl" marker-end="url(#ah)"/>
+        <rect x="55" y="304" width="170" height="50" rx="10" fill="#000" stroke="#555555" stroke-width="2"/>
+        <text x="140" y="334" text-anchor="middle" class="d-lab s">RoBERTa · T5 · ViT</text>
+        <rect x="315" y="304" width="170" height="50" rx="10" fill="#000" stroke="#555555" stroke-width="2"/>
+        <text x="400" y="334" text-anchor="middle" class="d-lab s">GPT-2 · GPT-3 · LLaMA</text>
+        <!-- convergence -->
+        <path d="M140 354 L140 404 L400 404 L400 354" class="fl" fill="none"/>
+        <line x1="270" y1="404" x2="270" y2="446" class="fl" marker-end="url(#ahG)"/>
+        <rect x="160" y="452" width="220" height="54" rx="10" class="d-attn"/>
+        <text x="270" y="485" text-anchor="middle" class="d-lab b" fill="var(--deep)">L'ère des LLM</text>
+        <text x="270" y="540" text-anchor="middle" class="d-cap">2017 → aujourd'hui</text>
+      </svg></div>
+    <p class="note">2018 : <b style="color:#58C4DD">BERT</b> (encodeur seul) et <b style="color:#FFFF00">GPT</b> (décodeur seul) · le substrat commun du NLP.</p>
+  </div>
+  <div class="pageno">17 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 4 · Héritage</div>
+    <h2>L'ère des LLM</h2>
+    <svg class="uline" width="281" height="14" viewBox="0 0 281 14"><path d="M4 8 C 79 3, 197 12, 277 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 460">
+        <text x="290" y="28" text-anchor="middle" class="d-cap">paramètres · échelle logarithmique</text>
+        <!-- axes -->
+        <line x1="80" y1="60" x2="80" y2="370" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="80" y1="370" x2="520" y2="370" stroke="var(--ink)" stroke-width="1.5"/>
+        <g stroke="var(--light)" stroke-width="1.5" stroke-dasharray="3 5">
+          <line x1="80" y1="335" x2="520" y2="335"/>
+          <line x1="80" y1="210" x2="520" y2="210"/>
+          <line x1="80" y1="85" x2="520" y2="85"/>
+        </g>
+        <g class="d-lab s" fill="var(--mid)" text-anchor="end">
+          <text x="72" y="340">10⁸</text><text x="72" y="215">10¹⁰</text><text x="72" y="90">10¹²</text>
+        </g>
+        <!-- growth line: log10(params): 213M→8.33, 340M→8.53, 175B→11.24, ~1T→12 -->
+        <polyline points="120,339 200,326 340,132 470,85" fill="none" stroke="var(--green)" stroke-width="3"/>
+        <circle cx="120" cy="339" r="7" fill="var(--mid)"/>
+        <circle cx="200" cy="326" r="7" fill="var(--blue)"/>
+        <circle cx="340" cy="132" r="8" fill="var(--green)"/>
+        <circle cx="470" cy="85" r="9" fill="#FFFF00"/>
+        <!-- param labels above points -->
+        <g class="d-lab b" text-anchor="middle">
+          <text x="120" y="318">213 M</text>
+          <text x="212" y="302">340 M</text>
+          <text x="330" y="112" fill="var(--deep)">175 B</text>
+          <text x="452" y="64" fill="var(--deep)">~10¹²</text>
+        </g>
+        <!-- names + years under axis -->
+        <g class="d-lab s" text-anchor="middle">
+          <text x="120" y="396">Transf. big</text><text x="200" y="396">BERT-L</text>
+          <text x="340" y="396">GPT-3</text><text x="470" y="396">frontière</text>
+        </g>
+        <g class="d-cap" text-anchor="middle">
+          <text x="120" y="420">2017</text><text x="200" y="420">2018</text>
+          <text x="340" y="420">2020</text><text x="470" y="420">2023+</text>
+        </g>
+      </svg></div>
+    <p class="note"><b style="color:#58C4DD">213 M</b> → 340 M → <b style="color:#83C167">175 B</b> → ~10¹² : trois ordres de grandeur en six ans.</p>
+  </div>
+  <div class="pageno">18 / 20</div>
+</section>
+
+<section class="slide">
+  <div class="scn">
+    <div class="kick">Partie 4 · Regard critique</div>
+    <h2>Limites du papier</h2>
+    <svg class="uline" width="357" height="14" viewBox="0 0 357 14"><path d="M4 8 C 100 3, 250 12, 353 6" stroke="#FFFF00" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+    <div class="fig"><svg viewBox="0 0 540 460">
+        <text x="290" y="28" text-anchor="middle" class="d-cap">coût mémoire / calcul de l'attention</text>
+        <!-- axes -->
+        <line x1="80" y1="60" x2="80" y2="380" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="80" y1="380" x2="520" y2="380" stroke="var(--ink)" stroke-width="1.5"/>
+        <!-- O(n) reference -->
+        <line x1="80" y1="380" x2="500" y2="290" stroke="var(--mid)" stroke-width="2" stroke-dasharray="6 6"/>
+        <text x="470" y="272" class="d-lab b" fill="var(--mid)">O(n)</text>
+        <!-- O(n^2) -->
+        <polyline points="{{PAR}}" fill="none" stroke="var(--orange)" stroke-width="3"/>
+        <text x="436" y="128" text-anchor="end" class="d-lab b" fill="var(--orange)" font-size="18">O(n²)</text>
+        <line x1="120" y1="410" x2="290" y2="410" class="fl" marker-end="url(#ah)"/>
+        <text x="302" y="415" class="d-lab s">longueur de séquence n</text>
+      </svg></div>
+    <p class="note">Coût <b style="color:#FFFF00">quadratique</b> en n · contexte borné · évalué surtout en traduction.</p>
+  </div>
+  <div class="pageno">19 / 20</div>
+</section>
+
+<section class="slide bleed"><img src="assets/end.png" alt="Merci"></section>
+
+</div>
+
+<div id="progress"></div>
+<div id="nav">
+  <button id="prev" aria-label="Précédent">‹</button>
+  <span class="count"><span id="cur">1</span> / <span id="tot">20</span></span>
+  <button id="next" aria-label="Suivant">›</button>
+</div>
+<div id="hint">← → naviguer · F plein écran · P imprimer / PDF</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0, N = slides.length;
+  document.getElementById('tot').textContent = N;
+  var stage = document.getElementById('stage');
+  function fit(){
+    var s = Math.min(window.innerWidth/1280, window.innerHeight/720);
+    stage.style.setProperty('--s', s);
+  }
+  function show(n){
+    i = Math.max(0, Math.min(N-1, n));
+    slides.forEach(function(sl,k){ sl.classList.toggle('active', k===i); });
+    document.getElementById('cur').textContent = i+1;
+    document.getElementById('progress').style.width = ((i)/(N-1)*100)+'%';
+    if(location.hash !== '#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  }
+  function next(){ show(i+1); } function prev(){ show(i-1); }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); next(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ show(0); } else if(e.key==='End'){ show(N-1); }
+    else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();} else {document.exitFullscreen&&document.exitFullscreen();} }
+    else if(e.key==='p'||e.key==='P'){ e.preventDefault(); window.print(); }
+  });
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  stage.addEventListener('click', function(e){ if(e.target.closest('#nav')) return; next(); });
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', function(){ var h=parseInt(location.hash.slice(1)); if(h) show(h-1); });
+  fit();
+  var start = parseInt((location.hash||'').slice(1)); show(start? start-1 : 0);
+})();
+</script>
+</body>
+</html>
