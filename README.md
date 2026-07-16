@@ -91,13 +91,16 @@ Un PDF déjà généré (`attention-deck.pdf`) est fourni comme référence.
 
 ---
 
-## Variante 3Blue1Brown
+## Variantes 3Blue1Brown
 
-Le dossier **`3b1b/`** contient la même présentation dans le style 3Blue1Brown :
-fond noir, typographie Computer Modern (CMU Serif), duo bleu `#58C4DD` / jaune
-`#FFD64F` de manim, grille de plan mathématique en fond, termes Q / K / V
-colorés dans les équations LaTeX. Même navigation, même export
-(`3b1b/index.html` + `3b1b/attention-deck-3b1b.pdf`).
+- **`3b1b/`** : le style des vidéos : fond noir pur, CMU Serif centré (config
+  officielle de `3b1b/videos`), palette manim exacte (bleu `#58C4DD`, jaune
+  `#FFFF00`), soulignage jaune à main levée, Q / K / V colorés dans les équations.
+- **`3b1b-light/`** : la même grammaire sur **papier blanc** (« livre imprimé »),
+  avec les variantes foncées officielles de la palette manim (blue_e `#1C758A`,
+  yellow_e `#E8C11C`, gold_e `#C78D46`).
+
+Même navigation, même export (`index.html` + PDF dans chaque dossier).
 
 ---
 

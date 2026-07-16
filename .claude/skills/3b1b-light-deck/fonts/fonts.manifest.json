@@ -1,0 +1,5 @@
+[
+  {"family": "CMU Serif", "file": "cmunrm.ttf", "weight": 400},
+  {"family": "CMU Serif", "file": "cmunbx.ttf", "weight": 700},
+  {"family": "CMU Serif", "file": "cmunti.ttf", "weight": 400, "style": "italic"}
+]

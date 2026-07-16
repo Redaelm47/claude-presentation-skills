@@ -14,6 +14,7 @@ Résultat : un HTML unique autonome + `assets/*.png` (visuels canvas-design) + u
 |---|---|---|
 | `metropolis-deck` | Clair : blanc cassé, teal foncé, accent orange, Fira Sans, plat. Le beamer moderne des ingénieurs. | Amphi, cours, soutenance, salle éclairée |
 | `3b1b-deck` | Sombre : noir pur, CMU Serif (LaTeX), scènes centrées façon manim, bleu #58C4DD + jaune #FFFF00. Le style des vidéos 3Blue1Brown. | Vidéo, projection, sujet mathématique |
+| `3b1b-light-deck` | Clair : la même grammaire manim sur papier blanc (livre imprimé), palette manim foncée (blue_e, yellow_e, gold_e). | Salle éclairée mais esprit 3b1b, polycopié |
 
 - Si l'utilisateur a nommé un thème (ou un look évident : « comme 3b1b », « style beamer ») : le prendre.
 - Sinon : **poser la question** (AskUserQuestion) avec une ligne de description par thème. Ne jamais deviner.
