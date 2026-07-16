@@ -100,6 +100,9 @@ Un PDF déjà généré (`attention-deck.pdf`) est fourni comme référence.
   avec les variantes foncées officielles de la palette manim (blue_e `#1C758A`,
   yellow_e `#E8C11C`, gold_e `#C78D46`).
 
+- **`3b1b-gray/`** : l'ardoise manim : le fond gris par défaut `#333333` de
+  manimlib, texte blanc, emphase au rouge `red_c #FC6255`.
+
 Même navigation, même export (`index.html` + PDF dans chaque dossier).
 
 ---
