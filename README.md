@@ -1,6 +1,6 @@
 <div align="center">
 
-# decksmith
+# claude-presentation-skills
 
 **Presentation skills for [Claude Code](https://claude.com/claude-code).**
 
@@ -44,8 +44,8 @@ Copy the skills into your project (or into `~/.claude/skills/` to have them
 everywhere):
 
 ```bash
-git clone https://github.com/Redaelm47/decksmith.git
-cp -r decksmith/.claude/skills/* your-project/.claude/skills/
+git clone https://github.com/Redaelm47/claude-presentation-skills.git
+cp -r claude-presentation-skills/.claude/skills/* your-project/.claude/skills/
 ```
 
 Then, in Claude Code:
