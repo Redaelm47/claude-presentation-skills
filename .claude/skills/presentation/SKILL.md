@@ -1,123 +1,123 @@
 ---
 name: presentation
-description: LE point d'entrée pour toute demande de présentation, slides ou deck. Fait choisir un thème parmi les thèmes disponibles (metropolis-deck, 3b1b-deck, ...) puis produit un deck HTML 16:9 complet (fichier unique autonome, navigation clavier, export PDF) avec diagrammes SVG grands et clairs, charts à anatomie complète, équations en vrai LaTeX, zéro tiret cadratin, et boucle de vérification visuelle obligatoire. Toujours utiliser ce skill quand l'utilisateur demande une présentation.
+description: THE entry point for any presentation, slides or deck request. Has the user pick a theme among the available themes (metropolis-deck, 3b1b-deck, ...), then produces a complete 16:9 HTML deck (single self-contained file, keyboard navigation, PDF export) with large, clear SVG diagrams, fully-anatomized charts, real LaTeX equations, zero em dashes, and a mandatory visual QA loop. Always use this skill when the user asks for a presentation.
 ---
 
-# Presentation — routeur de thèmes + règles de production communes
+# Presentation — theme router + shared production rules
 
-Ce skill est le **processus**. Le **style visuel** vient d'un thème séparé, choisi au début.
-Résultat : un HTML unique autonome + `assets/*.png` (visuels canvas-design) + un PDF.
+This skill is the **process**. The **visual style** comes from a separate theme, chosen up front.
+Output: a single self-contained HTML file + `assets/*.png` (canvas-design visuals) + a PDF.
 
-## 0. CHOISIR LE THÈME (première étape, toujours)
+## 0. PICK THE THEME (first step, always)
 
-| Thème (skill) | Look | Quand |
+| Theme (skill) | Look | When |
 |---|---|---|
-| `metropolis-deck` | Clair : blanc cassé, teal foncé, accent orange, Fira Sans, plat. Le beamer moderne des ingénieurs. | Amphi, cours, soutenance, salle éclairée |
-| `3b1b-deck` | Sombre : noir pur, CMU Serif (LaTeX), scènes centrées façon manim, bleu #58C4DD + jaune #FFFF00. Le style des vidéos 3Blue1Brown. | Vidéo, projection, sujet mathématique |
-| `3b1b-light-deck` | Clair : la même grammaire manim sur papier blanc (livre imprimé), emphase au stylo rouge red_e. | Salle éclairée mais esprit 3b1b, polycopié |
-| `3b1b-gray-deck` | Ardoise : le fond gris par défaut de manim #333333, texte blanc, emphase rouge red_c #FC6255. | Entre les deux : sombre mais doux, salle tamisée |
+| `metropolis-deck` | Light: off-white, dark teal, single orange accent, Fira Sans, flat. The modern engineer's beamer. | Lecture hall, course, defense, bright room |
+| `3b1b-deck` | Dark: pure black, CMU Serif (the LaTeX font), centered manim-style scenes, blue #58C4DD + yellow #FFFF00. The look of 3Blue1Brown videos. | Video, projection, mathematical topic |
+| `3b1b-light-deck` | Light: the same manim grammar on white paper (printed book), red-pen emphasis (red_e). | Bright room but 3b1b spirit, handout |
+| `3b1b-gray-deck` | Slate: manim's default gray background #333333, white text, red emphasis red_c #FC6255. | In between: dark but soft, dimmed room |
 
-- Si l'utilisateur a nommé un thème (ou un look évident : « comme 3b1b », « style beamer ») : le prendre.
-- Sinon : **poser la question** (AskUserQuestion) avec une ligne de description par thème. Ne jamais deviner.
-- Puis **lire intégralement** le `SKILL.md` du thème choisi ET son
-  `reference/deck-template.html` : le template est l'implémentation canonique
-  (CSS, navigation, print, primitives de diagramme). Le copier comme squelette
-  et remplacer le contenu. Ne pas réinventer le CSS.
+- If the user named a theme (or an obvious look: "like 3b1b", "beamer style"): take it.
+- Otherwise: **ask** (AskUserQuestion) with a one-line description per theme. Never guess.
+- Then **read in full** the chosen theme's `SKILL.md` AND its
+  `reference/deck-template.html`: the template is the canonical implementation
+  (CSS, navigation, print, diagram primitives). Copy it as the skeleton and
+  replace the content. Do not reinvent the CSS.
 
-Pour ajouter un nouveau thème plus tard : créer `.claude/skills/<nom>-deck/` avec le même
-contrat (SKILL.md de thème, `reference/deck-template.html` à placeholders `/*FONTS*/`
-`{{EQ...}}`, `reference/build-canvases-example.js`, `fonts/` + `fonts.manifest.json`),
-et l'ajouter à la table ci-dessus.
+To add a new theme later: create `.claude/skills/<name>-deck/` with the same
+contract (theme SKILL.md, `reference/deck-template.html` with `/*FONTS*/`
+`{{EQ...}}` placeholders, `reference/build-canvases-example.js`, `fonts/` +
+`fonts.manifest.json`), and add it to the table above.
 
-## 1. Prérequis (une fois par session)
+## 1. Prerequisites (once per session)
 
 ```bash
-npm i mathjax@3 playwright-core --no-audit --no-fund   # dans un dossier de travail
-export NODE_PATH=$(pwd)/node_modules                   # requis pour les scripts du skill
-# Chromium : fourni dans l'env Claude Code remote ; sinon npx playwright install chromium
-# ou export CHROMIUM_PATH=<binaire>.
-# Polices du thème (pour le rendu des visuels) :
+npm i mathjax@3 playwright-core --no-audit --no-fund   # in a working directory
+export NODE_PATH=$(pwd)/node_modules                   # required by the skill's scripts
+# Chromium: provided in the Claude Code remote env; otherwise npx playwright install chromium
+# or export CHROMIUM_PATH=<binary>.
+# Theme fonts (for rendering the visuals):
 cp .claude/skills/<THEME>/fonts/*.ttf ~/.fonts/ && fc-cache -f ~/.fonts
 ```
 
-Scripts partagés (dans `.claude/skills/presentation/scripts/`) :
+Shared scripts (in `.claude/skills/presentation/scripts/`):
 `mkfonts.js <manifest> <out.css>` · `tex2svg.js <eqs.json> <outDir>` ·
 `render.js <htmlDir> <pngDir>` · `qa.js <deck.html> <outDir> <n...>` ·
 `pdf.js <deck.html> <out.pdf> [pages]`.
 
-## 2. Structure du deck
+## 2. Deck structure
 
-- ~20 slides : cover · contexte · problème · séparateur · cœur technique (diagrammes) ·
-  séparateur · résultats (charts) · séparateur · impact · limites · fin.
-- 1 fichier HTML : sections `.slide` 16:9 (1280×720), scaling auto, navigation
-  ← → Espace, F plein écran, P impression, barre de progression, deep-link `#n`
-  et CSS print (une page par slide) : tout est déjà dans le template du thème.
+- ~20 slides: cover · context · problem · separator · technical core (diagrams) ·
+  separator · results (charts) · separator · impact · limitations · end.
+- 1 HTML file: 16:9 `.slide` sections (1280×720), auto scaling, navigation
+  ← → Space, F fullscreen, P print, progress bar, deep-link `#n`
+  and print CSS (one page per slide): all of it is already in the theme's template.
 
-## 3. Règles de contenu (non négociables)
+## 3. Content rules (non-negotiable)
 
-- **JAMAIS de tiret cadratin « — »**, nulle part : utiliser « : » ou « · ».
-  (Contrôle final : `grep — index.html` doit être vide côté texte visible.)
-- **Texte minimal** : max 4 puces courtes par slide (thèmes clairs) ou une seule
-  ligne de narration (thèmes type 3b1b). Jamais de paragraphe.
-- Terme clé en gras puis deux-points : `<b>Terme</b> : explication courte.`
-- Contenu **factuel et sourcé** : chiffres exacts du papier / des données, source
-  citée sous chaque chart.
+- **NEVER use an em dash "—"**, anywhere: use ":" or "·".
+  (Final check: `grep — index.html` must be empty on visible text.)
+- **Minimal text**: max 4 short bullets per slide (light themes) or a single
+  narration line (3b1b-style themes). Never a paragraph.
+- Key term in bold then a colon: `<b>Term</b>: short explanation.`
+- **Factual, sourced** content: exact numbers from the paper / the data, source
+  cited under every chart.
 
-## 4. Diagrammes techniques (SVG natif dans les slides)
+## 4. Technical diagrams (native SVG in the slides)
 
-- **GRANDS et lisibles, sans déborder** : ils remplissent l'espace disponible
-  (viewBox ~540 de large, hauteur selon densité). Labels ≥ 14px dans le viewBox,
-  boîtes généreuses (~50px de haut), flèches ≥ 24px pour que la pointe respire.
-  Si un diagramme paraît petit ou tassé au screenshot : agrandir boîtes et polices,
-  PAS le viewBox. Rien ne touche les bords ni le footer.
-- **Tracés orthogonaux uniquement** (verticaux/horizontaux + coudes), jamais de
-  diagonale approximative ; les contournements passent par la droite.
-- **Flèches** : marqueurs partagés définis une fois dans le `<svg id="defs-svg">`
-  caché du template (`#ah` neutre, `#ahO` accent, `#ahB` secondaire).
-- **Contraste** : jamais de texte clair sur fond clair ni sombre sur sombre :
-  vérifier chaque boîte remplie après changement de thème.
-- Les couleurs des primitives (`.d-box`, `.d-attn`, `.fl`, ...) viennent du thème.
+- **LARGE and readable, without overflowing**: they fill the available space
+  (viewBox ~540 wide, height per density). Labels ≥ 14px in the viewBox,
+  generous boxes (~50px tall), arrows ≥ 24px so the head can breathe.
+  If a diagram looks small or cramped in the screenshot: enlarge boxes and fonts,
+  NOT the viewBox. Nothing touches the edges or the footer.
+- **Orthogonal routing only** (vertical/horizontal + elbows), never an approximate
+  diagonal; detours go around on the right.
+- **Arrows**: shared markers defined once in the template's hidden
+  `<svg id="defs-svg">` (`#ah` neutral, `#ahO` accent, `#ahB` secondary).
+- **Contrast**: never light text on a light fill nor dark on dark:
+  check every filled box after a theme change.
+- Primitive colors (`.d-box`, `.d-attn`, `.fl`, ...) come from the theme.
 
-## 5. Charts : anatomie complète obligatoire
+## 5. Charts: full anatomy required
 
-Axes tracés, gridlines discrètes, labels de ticks, titre d'axe, labels de valeurs,
-note de source sous le chart, **mention explicite si l'échelle est tronquée**.
-Échelles calculées (px/unité constants), jamais à l'œil. Une série = pas de légende ;
-≥ 2 séries = légende. La valeur mise en avant porte l'accent du thème, le reste
-reste neutre.
+Drawn axes, subtle gridlines, tick labels, axis title, value labels,
+source note under the chart, **explicit mention if the scale is truncated**.
+Computed scales (constant px/unit), never eyeballed. One series = no legend;
+≥ 2 series = legend. The highlighted value carries the theme accent, the rest
+stays neutral.
 
-## 6. Équations : vrai LaTeX compilé au build
+## 6. Equations: real LaTeX compiled at build time
 
 ```bash
 node -e 'require("fs").writeFileSync("eqs.json", JSON.stringify({
   "eq-1.svg": String.raw`E = mc^2`,
-}))'   # TOUJOURS générer le JSON via String.raw (les \; se font avaler sinon)
+}))'   # ALWAYS generate the JSON via String.raw (\; gets swallowed otherwise)
 node .claude/skills/presentation/scripts/tex2svg.js eqs.json out/
 ```
-- SVG en `currentColor` : hérite de la couleur CSS ; injecter inline dans le template.
-- Termes clés colorés via `\textcolor[RGB]{r,g,b}{X}` avec les couleurs du thème.
-- **Pas de texte français accentué dans `\text{}`** (les accents cassent l'espacement) :
-  mettre les annotations en HTML sous l'équation, pas dans des braces LaTeX.
+- SVG uses `currentColor`: inherits the CSS color; inject inline into the template.
+- Key terms colored via `\textcolor[RGB]{r,g,b}{X}` with the theme's colors.
+- **No accented text inside `\text{}`** (accents break the spacing):
+  put annotations in HTML below the equation, not inside LaTeX braces.
 
-## 7. Visuels cover / séparateurs / fin (via le skill canvas-design)
+## 7. Cover / separator / end visuals (via the canvas-design skill)
 
-1) Écrire une philosophie de design (.md) dans la langue du thème ;
-2) L'exprimer en 5 pages HTML 1920×1080 (adapter `reference/build-canvases-example.js`
-   du thème au sujet), puis :
+1) Write a design philosophy (.md) in the deck's language;
+2) Express it as 5 HTML pages at 1920×1080 (adapt the theme's
+   `reference/build-canvases-example.js` to the topic), then:
 ```bash
 node .claude/skills/presentation/scripts/render.js canvases/ assets/
 ```
 
-## 8. QA et livraison (OBLIGATOIRE, aucune exception)
+## 8. QA and delivery (MANDATORY, no exceptions)
 
-1. `mkfonts.js` avec le manifest du thème → injecter dans `/*FONTS*/` ; injecter les
-   équations ; écrire `index.html`. Vérifier qu'il ne reste AUCUN placeholder `{{`.
-2. **Boucle de vérification visuelle sur les 20 slides, pas un échantillon** :
-   `qa.js index.html qa/ 1 2 3 ... 20`, puis **regarder réellement chaque image**
-   (outil Read) : chevauchements, texte coupé, éléments trop petits, contrastes
-   (texte invisible sur fond de même couleur), marges, footer, aucun « — ».
-   **Itérer : corriger → réassembler → re-screenshoter → re-regarder, jusqu'à zéro
-   défaut.** Ne jamais livrer une slide non vue. Mêmes contrôles sur les 5 visuels.
-3. PDF : `pdf.js index.html deck.pdf 1-20`, vérifier le nombre de pages.
-4. Livrer : `index.html` + `assets/` + PDF + notice d'export (Chrome : Ctrl/Cmd+P,
-   paysage, marges aucune, graphiques d'arrière-plan cochés).
+1. `mkfonts.js` with the theme's manifest → inject into `/*FONTS*/`; inject the
+   equations; write `index.html`. Check that NO `{{` placeholder remains.
+2. **Visual QA loop over all 20 slides, not a sample**:
+   `qa.js index.html qa/ 1 2 3 ... 20`, then **actually look at every image**
+   (Read tool): overlaps, clipped text, undersized elements, contrast issues
+   (invisible text on a same-color fill), margins, footer, no "—" anywhere.
+   **Iterate: fix → reassemble → re-screenshot → re-inspect, until zero
+   defects.** Never ship an unseen slide. Same checks on the 5 visuals.
+3. PDF: `pdf.js index.html deck.pdf 1-20`, verify the page count.
+4. Deliver: `index.html` + `assets/` + PDF + export note (Chrome: Ctrl/Cmd+P,
+   landscape, no margins, background graphics checked).

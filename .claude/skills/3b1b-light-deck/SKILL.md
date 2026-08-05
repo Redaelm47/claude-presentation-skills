@@ -1,50 +1,49 @@
 ---
 name: 3b1b-light-deck
-description: Thème 3Blue1Brown clair (« paper ») pour le skill presentation : la grammaire manim de 3b1b (scènes centrées, CMU Serif, soulignage à main levée) sur fond blanc, comme un livre imprimé, avec les pas foncés officiels de la palette manim (blue_e, teal_e, green_e) et l'emphase au stylo rouge red_e (le jaune ne survit pas au blanc). Utiliser via le skill presentation ; invoquer directement seulement si l'utilisateur demande explicitement ce thème.
+description: Light 3Blue1Brown ("paper") theme for the presentation skill; the 3b1b manim grammar (centered scenes, CMU Serif, hand-drawn underline) on a white background, like a printed book, using the official dark steps of the manim palette (blue_e, teal_e, green_e) and red-pen emphasis red_e (yellow does not survive on white). Use via the presentation skill; invoke directly only if the user explicitly asks for this theme.
 ---
 
-# Thème 3b1b light — les vidéos de Grant, imprimées dans un livre
+# 3b1b light theme — Grant's videos, printed in a book
 
-**Processus complet : suivre `.claude/skills/presentation/SKILL.md`.** Ce fichier ne
-décrit que le style. Implémentation canonique : `reference/deck-template.html`.
-Exemple fini : `3b1b-light/index.html` à la racine du repo.
+**Full process: follow `.claude/skills/presentation/SKILL.md`.** This file only
+describes the style. Canonical implementation: `reference/deck-template.html`.
 
-## Principe
+## Principle
 
-Même grammaire que `3b1b-deck` (lire sa fiche pour la grammaire complète : scène
-centrée, kicker, titre CMU 400, soulignage à main levée, une grande figure, une
-ligne de narration italique, cartes de chapitre nues, motif « séquence + arcs »),
-mais sur **papier blanc**. Le mode clair n'existe pas officiellement chez 3b1b ;
-la traduction rigoureuse utilise les **pas foncés officiels** de la palette manim
-(suffixe `_E`), lisibles sur blanc :
+Same grammar as `3b1b-deck` (read its card for the full grammar: centered
+scene, kicker, CMU 400 title, hand-drawn underline, one large figure, one
+italic narration line, bare chapter cards, "sequence + arcs" motif),
+but on **white paper**. A light mode does not officially exist at 3b1b;
+the rigorous translation uses the **official dark steps** of the manim palette
+(`_E` suffix), readable on white:
 
-| Rôle | Sombre (vidéo) | Clair (paper) | Nom manim |
+| Role | Dark (video) | Light (paper) | manim name |
 |---|---|---|---|
-| Fond | `#000000` | `#FFFFFF` | white |
-| Texte | `#FFFFFF` | `#000000` | black |
-| Narration / labels 2nd | `#BBBBBB` | `#555555` / muted `#777` | grey |
-| Objets, Q, liens | `#58C4DD` | `#1C758A` | blue_e |
-| K, secondaire | `#5CD0B3` | `#49A88F` | teal_e |
-| **Emphase** (soulignage, barre gagnante, arcs forts, V, chiffres clés) | `#FFFF00` | `#CF5044` | red_e |
-| Courbes, FFN | `#83C167` | `#699C52` | green_e |
+| Background | `#000000` | `#FFFFFF` | white |
+| Text | `#FFFFFF` | `#000000` | black |
+| Narration / secondary labels | `#BBBBBB` | `#555555` / muted `#777` | grey |
+| Objects, Q, links | `#58C4DD` | `#1C758A` | blue_e |
+| K, secondary | `#5CD0B3` | `#49A88F` | teal_e |
+| **Emphasis** (underline, winning bar, strong arcs, V, key figures) | `#FFFF00` | `#CF5044` | red_e |
+| Curves, FFN | `#83C167` | `#699C52` | green_e |
 
-**LA règle du mode clair : le jaune ne survit pas au blanc.** Jamais de jaune
-(même foncé `#E8C11C`) comme encre sur fond blanc : trop peu de contraste,
-désagréable à lire. La traduction du geste jaune de Grant sur papier est le
-**stylo rouge** : `red_e #CF5044` porte toute l'emphase. L'or `gold_e #C78D46`
-est réservé au rôle « optionnel » (masques), jamais à l'emphase.
+**THE light-mode rule: yellow does not survive on white.** Never use yellow
+(even dark `#E8C11C`) as ink on a white background: too little contrast,
+unpleasant to read. The paper translation of Grant's yellow gesture is the
+**red pen**: `red_e #CF5044` carries all the emphasis. Gold `gold_e #C78D46`
+is reserved for the "optional" role (masks), never for emphasis.
 
-## Spécificités du mode clair
+## Light-mode specifics
 
-- Boîtes de diagramme : fond blanc + trait noir 2px ; fills doux
-  `rgba(207,80,68,.08)` (rouge), `rgba(28,117,138,.10)` (bleu),
-  `rgba(105,156,82,.12)` (vert) ; barres Add&Norm `#ececec` ; flèches `#555`.
-- La boîte racine mise en avant (ex. « Transformer ») : fond noir `#151515`,
-  label blanc (`.d-lab.w:#fff`) : l'inverse du mode sombre.
-- Charts : axes noirs, gridlines `#ddd` pointillées, barres neutres `#c9c9c9`,
-  secondaire blue_e, gagnante red_e, valeurs noires.
-- Équations : Q `RGB{28,117,138}`, K `RGB{73,168,143}`, V `RGB{207,80,68}`.
-- **Piège du portage sombre → clair : re-vérifier TOUS les contrastes** (rien de
-  blanc sur blanc : cercle « + », rangée de tokens, chips) et **vérifier que le
-  bloc `:root` a bien été remplacé** (un replace multiligne qui échoue en silence
-  laisse l'encre blanche : contrôler `--ink` avant d'assembler).
+- Diagram boxes: white fill + 2px black stroke; soft fills
+  `rgba(207,80,68,.08)` (red), `rgba(28,117,138,.10)` (blue),
+  `rgba(105,156,82,.12)` (green); Add&Norm bars `#ececec`; arrows `#555`.
+- The highlighted root box (e.g. "Transformer"): `#151515` black fill,
+  white label (`.d-lab.w:#fff`): the inverse of dark mode.
+- Charts: black axes, dotted `#ddd` gridlines, neutral `#c9c9c9` bars,
+  secondary blue_e, winner red_e, black values.
+- Equations: Q `RGB{28,117,138}`, K `RGB{73,168,143}`, V `RGB{207,80,68}`.
+- **Dark → light porting pitfall: re-check ALL contrasts** (nothing
+  white-on-white: "+" circle, token row, chips) and **verify the `:root`
+  block was actually replaced** (a silently-failed multiline replace leaves
+  white ink: check `--ink` before assembling).

@@ -1,4 +1,4 @@
-// "Attention métropolitaine" canvases — Metropolis (beamer) language.
+// Example canvases — Metropolis (beamer) visual language.
 // Flat, off-white, dark teal + orange, Fira Sans. 1920x1080 HTML pages -> PNG.
 const fs = require('fs');
 const path = require('path');
@@ -54,7 +54,7 @@ function cover() {
     keys.push([600 + jit, y]);
   }
   return page(`
-  <div style="position:absolute;left:110px;top:96px" class="kicker">Séminaire · Journal club</div>
+  <div style="position:absolute;left:110px;top:96px" class="kicker">Seminar · Journal club</div>
   <div style="position:absolute;right:110px;top:100px" class="mut">arXiv:1706.03762</div>
 
   <div style="position:absolute;left:110px;top:300px;width:1060px">
@@ -177,18 +177,18 @@ function end() {
 const files = {
   'cover.html': cover(),
   'section-architecture.html': separator({
-    num: '01', title: "L'architecture Transformer",
-    items: ['Encodeur & décodeur', 'Self-attention', 'Multi-head'],
+    num: '01', title: "The architecture Transformer",
+    items: ['Encoder & decoder', 'Self-attention', 'Multi-head'],
     motif: motifArchitecture(), pageno: '05',
   }),
   'section-results.html': separator({
-    num: '02', title: 'Résultats',
+    num: '02', title: 'Results',
     items: ['WMT 2014', 'BLEU 28.4 & 41.8', "Coût d'entraînement"],
     motif: motifResults(), pageno: '13',
   }),
   'section-impact.html': separator({
     num: '03', title: 'Impact',
-    items: ['BERT', 'GPT', "L'ère des LLM"],
+    items: ['BERT', 'GPT', 'The LLM era'],
     motif: motifImpact(), pageno: '16',
   }),
   'end.html': end(),

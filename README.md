@@ -1,60 +1,121 @@
-# Template-presentation — skill Claude Code pour créer des présentations
+<div align="center">
 
-Un **skill [Claude Code](https://claude.com/claude-code)** qui produit des présentations HTML
-soignées : un fichier unique autonome (16:9, navigation clavier, export PDF), des diagrammes
-SVG, des équations en vrai LaTeX, et une boucle de vérification visuelle avant livraison.
+# decksmith
 
-Le skill est organisé en **un routeur + des thèmes** :
+**Presentation skills for [Claude Code](https://claude.com/claude-code).**
 
-| Thème | Look | Quand l'utiliser |
+Ask for a deck, pick a theme, get a single-file 16:9 HTML presentation:
+real LaTeX equations, hand-tuned SVG diagrams, full-anatomy charts,
+keyboard navigation, and a pixel-perfect PDF export.
+
+[Themes](#themes) · [Quick start](#quick-start) · [Usage](#usage) · [How it works](#how-it-works) · [Layout](#repository-layout) · [Add a theme](#add-a-theme) · [License](#license)
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-D97757)](https://claude.com/claude-code)
+[![Themes](https://img.shields.io/badge/themes-4-EB811B)](#themes)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
+
+</div>
+
+---
+
+## Themes
+
+Four carefully engineered themes, each a faithful reconstruction of a real
+visual language:
+
+| | |
+|:---:|:---:|
+| ![Metropolis theme](docs/previews/metropolis.png) | ![3b1b dark theme](docs/previews/3b1b-dark.png) |
+| **`metropolis-deck`** · the modern engineer's beamer | **`3b1b-deck`** · 3Blue1Brown, pure black |
+| ![3b1b light theme](docs/previews/3b1b-light.png) | ![3b1b gray theme](docs/previews/3b1b-gray.png) |
+| **`3b1b-light-deck`** · the manim grammar, printed on paper | **`3b1b-gray-deck`** · the manim slate, red emphasis |
+
+| Theme | Look | Best for |
 |---|---|---|
-| `metropolis-deck` | Clair : blanc cassé, teal foncé, accent orange, Fira Sans. Le beamer moderne des ingénieurs. | Amphi, cours, soutenance, salle éclairée |
-| `3b1b-deck` | Sombre : noir pur, CMU Serif (LaTeX), scènes centrées façon manim, bleu + jaune. Le style 3Blue1Brown. | Vidéo, projection, sujet mathématique |
-| `3b1b-light-deck` | Clair : la même grammaire manim sur papier blanc, emphase au stylo rouge. | Salle éclairée mais esprit 3b1b, polycopié |
-| `3b1b-gray-deck` | Ardoise : fond gris manim `#333333`, texte blanc, emphase rouge. | Sombre mais doux, salle tamisée |
+| `metropolis-deck` | Off-white, dark teal, single orange accent, Fira Sans, flat and rigorous | Lectures, courses, defenses, bright rooms |
+| `3b1b-deck` | Pure black, CMU Serif (the LaTeX font), centered manim scenes, blue + yellow | Videos, projection, mathematical topics |
+| `3b1b-light-deck` | The same manim grammar on white paper, red-pen emphasis | Bright rooms with a 3b1b spirit, handouts |
+| `3b1b-gray-deck` | manim's default `#333333` slate, white text, red emphasis | Dark but soft, dimmed rooms |
 
-## Installation
+## Quick start
 
-Copiez le dossier `.claude/skills/` dans votre projet (ou dans `~/.claude/skills/` pour
-l'avoir partout) :
+Copy the skills into your project (or into `~/.claude/skills/` to have them
+everywhere):
 
 ```bash
-git clone https://github.com/Redaelm47/Template-presentation.git
-cp -r Template-presentation/.claude/skills/* mon-projet/.claude/skills/
+git clone https://github.com/Redaelm47/decksmith.git
+cp -r decksmith/.claude/skills/* your-project/.claude/skills/
 ```
 
-## Utilisation
+Then, in Claude Code:
 
-Dans Claude Code, demandez simplement une présentation :
+> Make me a 15-slide presentation on X
 
-> Fais-moi une présentation de 15 slides sur X
+The `presentation` skill triggers, asks you to pick a theme (unless you name
+one: "3b1b style", "beamer look"), and builds the deck.
 
-Le skill `presentation` se déclenche, vous fait choisir un thème (sauf si vous en nommez un —
-« style 3b1b », « façon beamer »…), puis produit :
+## Usage
 
-- `index.html` — le deck complet, fichier unique (polices embarquées), aucun serveur requis ;
-- `assets/*.png` — les visuels d'ouverture générés ;
-- un export **PDF** (une page 16:9 par slide, via le CSS d'impression : Ctrl/Cmd+P,
-  paysage, marges *Aucune*, graphiques d'arrière-plan cochés).
+Every build produces:
 
-Navigation dans le deck : **→/←** ou Espace pour changer de slide, **F** plein écran,
-**P** imprimer, l'URL suit la slide courante (`index.html#8`).
+- **`index.html`**: the whole deck as **one self-contained file** (fonts
+  embedded as base64, no server, no external requests). Open it in a browser.
+- **`assets/*.png`**: generated cover and section visuals.
+- **A PDF export**: one 16:9 page per slide, driven by the print CSS.
 
-## Contenu du dépôt
+Navigation inside a deck:
 
-| Chemin | Rôle |
+| Key | Action |
 |---|---|
-| `.claude/skills/presentation/` | Le **routeur** : processus commun, règles de production, scripts de build (rendu, LaTeX→SVG, polices, PDF, QA). |
-| `.claude/skills/<thème>-deck/` | Une **carte de thème** par style : `SKILL.md`, `fonts/`, `reference/deck-template.html` (l'implémentation canonique du CSS et de la navigation). |
-| `index.html`, `attention-deck.pdf`, `assets/`, `design-philosophy.md` | **Deck d'exemple** (thème Metropolis) : *Attention Is All You Need*, 20 slides. |
-| `3b1b/`, `3b1b-light/`, `3b1b-gray/` | Le même deck d'exemple décliné dans les trois thèmes 3b1b. |
+| **→** / **Space** / click | Next slide |
+| **←** | Previous slide |
+| **F** | Fullscreen |
+| **P** | Print / export to PDF |
+| URL `#8` | Deep link to slide 8 |
 
-Les decks *Attention Is All You Need* sont des **démos de sortie du skill** — ouvrez un des
-`index.html` dans un navigateur pour voir ce que chaque thème produit.
+Manual PDF export from Chrome: **Ctrl/Cmd+P**, landscape, margins *None*,
+*Background graphics* checked.
 
-## Ajouter un thème
+## How it works
 
-Créez `.claude/skills/<nom>-deck/` avec le même contrat que les thèmes existants
-(`SKILL.md` de thème, `reference/deck-template.html` à placeholders,
-`reference/build-canvases-example.js`, `fonts/` + `fonts.manifest.json`), puis ajoutez-le
-à la table du routeur dans `.claude/skills/presentation/SKILL.md`.
+The skill set is split into a **process** and **styles**:
+
+- **`presentation`** is the router and the shared production rules: deck
+  structure, minimal-text rules, SVG diagram standards (orthogonal routing,
+  contrast checks), chart anatomy, LaTeX compiled to SVG at build time
+  (MathJax), and a **mandatory visual QA loop**: every slide is screenshotted
+  and inspected before delivery, then iterated until zero defects.
+- **Each theme** is a style card + a canonical `deck-template.html` (CSS,
+  navigation, print layout, diagram primitives) + its fonts. The build copies
+  the template and replaces the content, so every deck inherits the exact
+  visual grammar of its theme.
+
+Build tooling (used by the skill, not by the viewer): Node.js with `mathjax@3`
+and `playwright-core` for headless rendering, screenshots and PDF export.
+
+## Repository layout
+
+```
+.claude/skills/
+├── presentation/            # the router: process, rules, build scripts
+│   └── scripts/             # mkfonts · tex2svg · render · qa · pdf
+├── metropolis-deck/         # one directory per theme:
+├── 3b1b-deck/               #   SKILL.md (style card)
+├── 3b1b-light-deck/         #   reference/deck-template.html (canonical impl.)
+└── 3b1b-gray-deck/          #   fonts/ + fonts.manifest.json
+docs/previews/               # theme preview images (this README)
+```
+
+## Add a theme
+
+Create `.claude/skills/<name>-deck/` following the theme contract (style
+`SKILL.md`, `reference/deck-template.html` with placeholders,
+`reference/build-canvases-example.js`, `fonts/` + manifest), then register it
+in the router table of `.claude/skills/presentation/SKILL.md`.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the details.
+
+## License
+
+[MIT](LICENSE). The bundled fonts (CMU Serif, Fira Sans) remain under their
+original license, the [SIL Open Font License 1.1](https://openfontlicense.org).

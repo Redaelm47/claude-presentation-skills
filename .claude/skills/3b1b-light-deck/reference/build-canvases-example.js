@@ -79,9 +79,9 @@ function end() {
 
 const files = {
   'cover.html': cover(),
-  'section-architecture.html': separator('1', "L'architecture", 'Encodeur, décodeur, et le mécanisme qui remplace la récurrence', '05'),
-  'section-results.html': separator('3', 'Résultats', 'WMT 2014 · BLEU 28.4 &amp; 41.8 · un coût d\'entraînement effondré', '13'),
-  'section-impact.html': separator('4', 'Impact', 'BERT, GPT, et l\'ère des grands modèles de langage', '16'),
+  'section-architecture.html': separator('1', "The architecture", 'Encoder, decoder, and the mechanism that replaces recurrence', '05'),
+  'section-results.html': separator('3', 'Results', 'WMT 2014 · BLEU 28.4 &amp; 41.8 · a collapsed training cost', '13'),
+  'section-impact.html': separator('4', 'Impact', 'BERT, GPT, and the era of large language models', '16'),
   'end.html': end(),
 };
 for (const [name, html] of Object.entries(files)) {

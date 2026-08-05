@@ -1,63 +1,62 @@
 ---
 name: 3b1b-deck
-description: Thème 3Blue1Brown pour le skill presentation : noir pur, CMU Serif (la police de LaTeX), scènes centrées façon manim, palette manim exacte (bleu #58C4DD, jaune #FFFF00, teal, vert), soulignage jaune à main levée, équations LaTeX à termes colorés. Utiliser via le skill presentation ; invoquer directement seulement si l'utilisateur demande explicitement ce thème.
+description: 3Blue1Brown theme for the presentation skill; pure black, CMU Serif (the LaTeX font), centered manim-style scenes, exact manim palette (blue #58C4DD, yellow #FFFF00, teal, green), hand-drawn yellow underline, LaTeX equations with colored terms. Use via the presentation skill; invoke directly only if the user explicitly asks for this theme.
 ---
 
-# Thème 3b1b — les slides comme des scènes manim
+# 3b1b theme — slides as manim scenes
 
-**Processus complet : suivre `.claude/skills/presentation/SKILL.md`.** Ce fichier ne
-décrit que le style. Implémentation canonique : `reference/deck-template.html`
-(placeholders `/*FONTS*/`, `{{EQ...}}`, `{{W1..3}}`, `{{PAR}}`). Exemple fini :
-`3b1b/index.html` à la racine du repo.
+**Full process: follow `.claude/skills/presentation/SKILL.md`.** This file only
+describes the style. Canonical implementation: `reference/deck-template.html`
+(placeholders `/*FONTS*/`, `{{EQ...}}`, `{{W1..3}}`, `{{PAR}}`).
 
-## Vérité de terrain (ne pas improviser)
+## Ground truth (do not improvise)
 
-Configuration réelle de `3b1b/videos/custom_config.yml` : fond `#000000`,
-police `CMU Serif`, texte **CENTRÉ**. Palette officielle `manimlib` :
+Actual configuration of `3b1b/videos/custom_config.yml`: background `#000000`,
+font `CMU Serif`, **CENTERED** text. Official `manimlib` palette:
 
-| Rôle | Couleur | Nom manim |
+| Role | Color | manim name |
 |---|---|---|
-| Fond | `#000000` noir pur, **sans grille** | background |
-| Texte / boîtes neutres | `#FFFFFF`, secondaire `#DDDDDD`, narration `#BBBBBB` (grey_b), kickers `#777` | white / grey |
-| Objets, liens, termes Q | `#58C4DD` | blue_c |
-| **Emphase** (soulignage, élément clé, V, barre gagnante) | `#FFFF00` pur | yellow_c |
-| Termes K, secondaire | `#5CD0B3` | teal_c |
-| Courbes de croissance, FFN | `#83C167` | green_c |
-| « Optionnel » (masques) | `#F0AC5F` | gold |
+| Background | `#000000` pure black, **no grid** | background |
+| Text / neutral boxes | `#FFFFFF`, secondary `#DDDDDD`, narration `#BBBBBB` (grey_b), kickers `#777` | white / grey |
+| Objects, links, Q terms | `#58C4DD` | blue_c |
+| **Emphasis** (underline, key element, V, winning bar) | pure `#FFFF00` | yellow_c |
+| K terms, secondary | `#5CD0B3` | teal_c |
+| Growth curves, FFN | `#83C167` | green_c |
+| "Optional" (masks) | `#F0AC5F` | gold |
 
-## La grammaire d'une slide (ce qui fait le style)
+## The grammar of a slide (what makes the style)
 
-Chaque slide de contenu est une **scène centrée**, pas une mise en page en colonnes :
-1. kicker gris `#777` en petites capitales espacées ;
-2. **titre CMU Serif blanc, poids 400** (jamais gras) ;
-3. **soulignage jaune à main levée** : un `<path>` courbe (`M4 8 C ... `) 3.5px, pas un rect ;
-4. UNE grande figure centrale (diagramme / équation / chart) qui occupe l'espace ;
-5. UNE ligne de narration **italique grise** en bas, avec 1-3 mots-clés colorés.
+Every content slide is a **centered scene**, not a column layout:
+1. gray `#777` kicker in spaced small caps;
+2. **white CMU Serif title, weight 400** (never bold);
+3. **hand-drawn yellow underline**: a curved `<path>` (`M4 8 C ...`) at 3.5px, not a rect;
+4. ONE large central figure (diagram / equation / chart) that fills the space;
+5. ONE **italic gray narration line** at the bottom, with 1-3 colored keywords.
 
-- Pages de section = **cartes de chapitre nues** : kicker + titre + soulignage, rien d'autre.
-- Cover / fin : motif signature = **séquence de tokens avec arcs d'attention pondérés**
-  (arcs bleus fins + UN arc jaune épais ; cercles cerclés bleus + points jaunes pleins).
-- Équations : ÉNORMES et centrées (~120px de haut), termes colorés
-  (`\textcolor[RGB]{88,196,221}{Q}`, `{92,208,179}{K}`, `{255,255,0}{V}`) ; les
-  annotations en **rangée HTML sous l'équation** (jamais dans des braces `\text{}` :
-  les accents français y cassent l'espacement).
-- Charts : axes **blancs** fins, gridlines pointillées `#333` très discrètes, barres
-  neutres `#444`, secondaire bleu, gagnante **jaune pur**, labels blancs CMU,
-  source en italique gris.
+- Section pages = **bare chapter cards**: kicker + title + underline, nothing else.
+- Cover / end: signature motif = **token sequence with weighted attention arcs**
+  (thin blue arcs + ONE thick yellow arc; ringed blue circles + solid yellow dots).
+- Equations: HUGE and centered (~120px tall), colored terms
+  (`\textcolor[RGB]{88,196,221}{Q}`, `{92,208,179}{K}`, `{255,255,0}{V}`);
+  annotations in an **HTML row below the equation** (never inside `\text{}`
+  braces: accented characters break the spacing there).
+- Charts: thin **white** axes, very subtle dotted `#333` gridlines, neutral `#444`
+  bars, secondary blue, winner **pure yellow**, white CMU labels,
+  gray italic source.
 
-## Diagrammes (primitives du template)
+## Diagrams (template primitives)
 
-`.d-box` : fond `#000`, trait blanc 2px · `.d-attn` : trait jaune, fond jaune 6% ·
-`.d-attn2` : trait bleu, fond bleu 9% · `.d-ffn` : trait vert, fond vert 8% ·
-`.d-norm` : barre `#1d1d1d` texte gris · flèches `#BBBBBB` 2.2px.
+`.d-box`: `#000` fill, 2px white stroke · `.d-attn`: yellow stroke, 6% yellow fill ·
+`.d-attn2`: blue stroke, 9% blue fill · `.d-ffn`: green stroke, 8% green fill ·
+`.d-norm`: `#1d1d1d` bar with gray text · arrows `#BBBBBB` 2.2px.
 
-**Piège n°1 en passant au noir : le contraste.** Toute forme `fill="#fff"` héritée
-d'un thème clair rend son texte invisible : vérifier chaque boîte remplie
-(cercle « + » résiduel, rangées de tokens, chips) : fond noir + trait clair, ou fond
-blanc + texte noir (`.d-lab.w`).
+**Pitfall #1 when going black: contrast.** Any `fill="#fff"` shape inherited
+from a light theme makes its text invisible: check every filled box
+(leftover "+" circle, token rows, chips): black fill + light stroke, or white
+fill + black text (`.d-lab.w`).
 
-## Polices
+## Fonts
 
-`fonts/fonts.manifest.json` : CMU Serif roman/bold/italic (paquet `fonts-cmu`,
-`apt-get install fonts-cmu` si absent). Embarquer via le `mkfonts.js` du skill
-presentation. Les installer aussi dans `~/.fonts` pour le rendu des visuels.
+`fonts/fonts.manifest.json`: CMU Serif roman/bold/italic (package `fonts-cmu`,
+`apt-get install fonts-cmu` if missing). Embed via the presentation skill's
+`mkfonts.js`. Also install them into `~/.fonts` for rendering the visuals.
