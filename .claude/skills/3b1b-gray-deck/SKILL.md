@@ -3,7 +3,7 @@ name: 3b1b-gray-deck
 description: Slate 3Blue1Brown theme for the presentation skill; manim's default gray background (#333333), white text, manim red emphasis red_c #FC6255 (underline, V, bars, arcs), Q/K keep the signature blue/teal. Use via the presentation skill; invoke directly only if the user explicitly asks for this theme.
 ---
 
-# 3b1b gray theme — the manim slate, red emphasis
+# 3b1b gray theme: the manim slate, red emphasis
 
 **Full process: follow `.claude/skills/presentation/SKILL.md`.** This file only
 describes the style. Canonical implementation: `reference/deck-template.html`.

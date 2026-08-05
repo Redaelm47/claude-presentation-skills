@@ -3,7 +3,7 @@ name: metropolis-deck
 description: Metropolis theme for the presentation skill; the modern engineer's beamer. Off-white, dark teal, single orange accent, Fira Sans, flat and rigorous. Use via the presentation skill; invoke directly only if the user explicitly asks for this theme.
 ---
 
-# Metropolis theme — the modern engineer's beamer
+# Metropolis theme: the modern engineer's beamer
 
 **Full process: follow `.claude/skills/presentation/SKILL.md`.** This file only
 describes the style. Canonical implementation: `reference/deck-template.html`

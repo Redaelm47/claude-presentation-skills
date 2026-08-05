@@ -3,7 +3,7 @@ name: 3b1b-deck
 description: 3Blue1Brown theme for the presentation skill; pure black, CMU Serif (the LaTeX font), centered manim-style scenes, exact manim palette (blue #58C4DD, yellow #FFFF00, teal, green), hand-drawn yellow underline, LaTeX equations with colored terms. Use via the presentation skill; invoke directly only if the user explicitly asks for this theme.
 ---
 
-# 3b1b theme — slides as manim scenes
+# 3b1b theme: slides as manim scenes
 
 **Full process: follow `.claude/skills/presentation/SKILL.md`.** This file only
 describes the style. Canonical implementation: `reference/deck-template.html`

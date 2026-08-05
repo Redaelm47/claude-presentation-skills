@@ -3,7 +3,7 @@ name: 3b1b-light-deck
 description: Light 3Blue1Brown ("paper") theme for the presentation skill; the 3b1b manim grammar (centered scenes, CMU Serif, hand-drawn underline) on a white background, like a printed book, using the official dark steps of the manim palette (blue_e, teal_e, green_e) and red-pen emphasis red_e (yellow does not survive on white). Use via the presentation skill; invoke directly only if the user explicitly asks for this theme.
 ---
 
-# 3b1b light theme — Grant's videos, printed in a book
+# 3b1b light theme: Grant's videos, printed in a book
 
 **Full process: follow `.claude/skills/presentation/SKILL.md`.** This file only
 describes the style. Canonical implementation: `reference/deck-template.html`.

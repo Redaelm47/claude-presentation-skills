@@ -3,7 +3,7 @@ name: presentation
 description: THE entry point for any presentation, slides or deck request. Has the user pick a theme among the available themes (metropolis-deck, 3b1b-deck, ...), then produces a complete 16:9 HTML deck (single self-contained file, keyboard navigation, PDF export) with large, clear SVG diagrams, fully-anatomized charts, real LaTeX equations, zero em dashes, and a mandatory visual QA loop. Always use this skill when the user asks for a presentation.
 ---
 
-# Presentation — theme router + shared production rules
+# Presentation: theme router + shared production rules
 
 This skill is the **process**. The **visual style** comes from a separate theme, chosen up front.
 Output: a single self-contained HTML file + `assets/*.png` (canvas-design visuals) + a PDF.
